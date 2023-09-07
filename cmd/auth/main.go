@@ -9,7 +9,7 @@ const (
 	envLocal = "local"
 	envDev   = "dev"
 	envProd  = "prod"
-	svc      = "MZDA"
+	svc      = "AUTH"
 )
 
 func main() {
