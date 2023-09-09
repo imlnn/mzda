@@ -1,7 +1,59 @@
-CREATE DATABASE auth IF NOT EXISTS;
-CREATE TABLE users IF NOT EXISTS(
-    id int primary,
-    username varchar,
-    pwd varchar,
-    email varchar
+CREATE TABLE IF NOT EXISTS subscriptions(
+    id serial PRIMARY KEY,
+    subscription_name varchar(255) NOT NULL UNIQUE,
+    subscription_admin int NOT NULL,
+    max_members int NOT NULL CHECK(max_members > 0),
+    price int NOT NULL CHECK(price > -1),
+    currency varchar(3) NOT NULL,
+    commission int NOT NULL,
+    charge_period int NOT NULL,
+    creation timestamp NOT NULL,
+    start timestamp NOT NULL,
+    ending timestamp
 );
+
+CREATE TABLE IF NOT EXISTS users(
+    id serial PRIMARY KEY,
+    username varchar(255) NOT NULL UNIQUE,
+    pwd varchar(255) NOT NULL,
+    email varchar(255) NOT NULL UNIQUE,
+    role int NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS subscription_users(
+     id serial PRIMARY KEY,
+     userID int NOT NULL,
+     subscriptionID int NOT NULL,
+     balance int NOT NULL,
+     subscription_start timestamp NOT NULL,
+     subscription_ending timestamp,
+
+    FOREIGN KEY (userID) REFERENCES users (id),
+    FOREIGN KEY (subscriptionID) REFERENCES subscriptions (id)
+);
+
+CREATE TABLE IF NOT EXISTS invoices(
+    id serial PRIMARY KEY,
+    userID int NOT NULL,
+    subscriptionID int NOT NULL,
+    amount int NOT NULL,
+    issued timestamp NOT NULL,
+    payed timestamp,
+
+    FOREIGN KEY (userID) REFERENCES users (id),
+    FOREIGN KEY (subscriptionID) REFERENCES subscriptions (id)
+);
+
+CREATE TABLE IF NOT EXISTS payments(
+     invoiceID serial PRIMARY KEY,
+     amount int NOT NULL,
+     accepted boolean,
+
+     FOREIGN KEY (invoiceID) REFERENCES invoices (id)
+);
+
+-- DROP TABLE subscriptions CASCADE;
+-- DROP TABLE users CASCADE;
+-- DROP TABLE subscription_users CASCADE;
+-- DROP TABLE invoices CASCADE;
+-- DROP TABLE payments CASCADE;

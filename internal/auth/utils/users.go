@@ -8,9 +8,9 @@ import (
 	"mzda/internal/storage/models/mzda"
 )
 
-func ParseUser(b io.ReadCloser) (*mzda.User, error) {
+func ParseUserDTO(b io.ReadCloser) (*mzda.UserDTO, error) {
 	const fn = "internal/auth/utils/users/ParseUser"
-	var usr mzda.User
+	var usr mzda.UserDTO
 
 	err := json.NewDecoder(b).Decode(&usr)
 	if err != nil {

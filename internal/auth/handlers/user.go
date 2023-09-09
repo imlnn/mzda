@@ -28,7 +28,7 @@ type ChangeEmailRequest struct {
 func CreateUser(storage mzda.UserStorage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/auth/handlers/user/CreateUser"
-		usr, err := utils.ParseUser(r.Body)
+		usr, err := utils.ParseUserDTO(r.Body)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))
 			http.Error(w, "failed to parse request", http.StatusBadRequest)
