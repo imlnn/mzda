@@ -23,9 +23,9 @@ type UserDTO struct {
 
 type UserStorage interface {
 	AddUser(usr *UserDTO) error
-	UserByName(username string) (usr *User, err error)
-	UserByEmail(email string) (usr *User, err error)
-	UserByID(userID int) (usr *User, err error)
+	UserByName(username string) (*User, error)
+	UserByEmail(email string) (*User, error)
+	UserByID(userID int) (*User, error)
 	DeleteUser(usr *User) error
 	UpdateUser(usr *User) error
 }

@@ -57,7 +57,7 @@ func (c *Connection) AddUser(usr *mzda.UserDTO) error {
 	return nil
 }
 
-func (c *Connection) UserByName(username string) (usr *mzda.User, err error) {
+func (c *Connection) UserByName(username string) (*mzda.User, error) {
 	const fn = "internal/storage/db/postgres/storage/UserByName"
 	stmt, err := c.db.Prepare("SELECT * FROM users WHERE username = $1")
 	if err != nil {
@@ -65,23 +65,22 @@ func (c *Connection) UserByName(username string) (usr *mzda.User, err error) {
 		return nil, err
 	}
 
-	var res mzda.User
+	var usr mzda.User
 
-	err = stmt.QueryRow(username).Scan(&res.ID, &res.Username, &res.Pwd, &res.Email, &res.Role)
+	err = stmt.QueryRow(username).Scan(&usr.ID, &usr.Username, &usr.Pwd, &usr.Email, &usr.Role)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, err
 	}
 
-	usr = &res
-	if usr == nil {
+	if usr.Username == "" {
 		return nil, fmt.Errorf("User not found")
 	}
 
-	return usr, nil
+	return &usr, nil
 }
 
-func (c *Connection) UserByEmail(email string) (usr *mzda.User, err error) {
+func (c *Connection) UserByEmail(email string) (*mzda.User, error) {
 	const fn = "internal/storage/db/postgres/storage/UserByEmail"
 	stmt, err := c.db.Prepare("SELECT * FROM users WHERE email = $1")
 	if err != nil {
@@ -89,24 +88,23 @@ func (c *Connection) UserByEmail(email string) (usr *mzda.User, err error) {
 		return nil, err
 	}
 
-	var res mzda.User
+	var usr mzda.User
 
-	err = stmt.QueryRow(email).Scan(&res.ID, &res.Username, &res.Pwd, &res.Email, &res.Role)
+	err = stmt.QueryRow(email).Scan(&usr.ID, &usr.Username, &usr.Pwd, &usr.Email, &usr.Role)
 
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, err
 	}
 
-	usr = &res
-	if usr == nil {
+	if usr.Username == "" {
 		return nil, fmt.Errorf("User not found")
 	}
 
-	return usr, nil
+	return &usr, nil
 }
 
-func (c *Connection) UserByID(userID int) (usr *mzda.User, err error) {
+func (c *Connection) UserByID(userID int) (*mzda.User, error) {
 	const fn = "internal/storage/db/postgres/storage/UserByEmail"
 	stmt, err := c.db.Prepare("SELECT * FROM users WHERE id = $1")
 	if err != nil {
@@ -114,20 +112,19 @@ func (c *Connection) UserByID(userID int) (usr *mzda.User, err error) {
 		return nil, err
 	}
 
-	var res mzda.User
+	var usr mzda.User
 
-	err = stmt.QueryRow(userID).Scan(&res.ID, &res.Username, &res.Pwd, &res.Email, &res.Role)
+	err = stmt.QueryRow(userID).Scan(&usr.ID, &usr.Username, &usr.Pwd, &usr.Email, &usr.Role)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, err
 	}
 
-	usr = &res
-	if usr == nil {
+	if usr.Username == "" {
 		return nil, fmt.Errorf("User not found")
 	}
 
-	return usr, nil
+	return &usr, nil
 }
 
 func (c *Connection) DeleteUser(usr *mzda.User) error {
