@@ -55,3 +55,15 @@ func ParseChangeEmail(b io.ReadCloser) (*handlers.ChangeEmailRequest, error) {
 
 	return &req, nil
 }
+
+func ParseCredentials(b io.ReadCloser) (*handlers.Credentials, error) {
+	const fn = "internal/auth/utils/users/ParseCredentials"
+	var req handlers.Credentials
+
+	err := json.NewDecoder(b).Decode(&req)
+	if err != nil {
+		return nil, fmt.Errorf("%s  %v", fn, err)
+	}
+
+	return &req, nil
+}

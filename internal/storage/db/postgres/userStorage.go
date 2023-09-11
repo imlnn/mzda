@@ -1,48 +1,14 @@
 package postgres
 
 import (
-	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
 	"log"
 	"mzda/internal/storage/models/mzda"
 )
 
-type Connection struct {
-	db *sql.DB
-}
-
-func New() (*Connection, error) {
-	const fn = "internal/storage/db/postgres/storage/new"
-	var db Connection
-
-	//dbUsername := os.Getenv("DB_USERNAME")
-	//dbPwd := os.Getenv("DB_PWD")
-	//connStr := fmt.Sprintf("postgres://%s:%s@localhost/mzda", dbUsername, dbPwd)
-
-	//connStr := "postgres://postgres:password@localhost/public?sslmode=disable"
-
-	connStr := "user=postgres password=password port=32768 sslmode=disable"
-
-	var err error
-	db.db, err = sql.Open("postgres", connStr)
-	if err != nil {
-		log.Println(fmt.Errorf("%s %v", fn, err))
-		return nil, err
-	}
-
-	err = db.db.Ping()
-	if err != nil {
-		log.Println(fmt.Errorf("%s %v", fn, err))
-		return nil, err
-	}
-
-	return &db, nil
-}
-
 func (c *Connection) AddUser(usr *mzda.UserDTO) error {
 	const fn = "internal/storage/db/postgres/storage/AddUser"
-	stmt, err := c.db.Prepare("INSERT INTO users (username, pwd, email, role) VALUES ($1, $2, $3, $4)")
+	stmt, err := c.db.Prepare("INSERT INTO users (username, password, email, role) VALUES ($1, $2, $3, $4)")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return err
@@ -146,7 +112,7 @@ func (c *Connection) DeleteUser(usr *mzda.User) error {
 
 func (c *Connection) UpdateUser(usr *mzda.User) error {
 	const fn = "internal/storage/db/postgres/storage/AddUser"
-	stmt, err := c.db.Prepare("UPDATE users SET username = $1, pwd = $2, email = $3 WHERE id = $4")
+	stmt, err := c.db.Prepare("UPDATE users SET username = $1, password = $2, email = $3 WHERE id = $4")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return err

@@ -25,26 +25,6 @@ type ChangeEmailRequest struct {
 	NewEmail string `json:"newEmail"`
 }
 
-func CreateUser(storage mzda.UserStorage) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		const fn = "internal/auth/handlers/user/CreateUser"
-		usr, err := utils.ParseUserDTO(r.Body)
-		if err != nil {
-			log.Println(fmt.Errorf("%s %v", fn, err))
-			http.Error(w, "failed to parse request", http.StatusBadRequest)
-			return
-		}
-		err = storage.AddUser(usr)
-		if err != nil {
-			log.Println(fmt.Errorf("%s %v", fn, err))
-			http.Error(w, "failed to update", http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-}
-
 func ChangePassword(storage mzda.UserStorage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/auth/handlers/user/ChangePassword"
@@ -89,7 +69,7 @@ func ChangePassword(storage mzda.UserStorage) http.HandlerFunc {
 
 func ChangeUsername(storage mzda.UserStorage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const fn = "internal/auth/handlers/user/ChangePassword"
+		const fn = "internal/auth/handlers/user/ChangeUsername"
 		req, err := utils.ParseChangeUsername(r.Body)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))
@@ -119,7 +99,7 @@ func ChangeUsername(storage mzda.UserStorage) http.HandlerFunc {
 
 func ChangeEmail(storage mzda.UserStorage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const fn = "internal/auth/handlers/user/ChangePassword"
+		const fn = "internal/auth/handlers/user/ChangeEmail"
 		req, err := utils.ParseChangeEmail(r.Body)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))

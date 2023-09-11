@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS subscriptions(
 CREATE TABLE IF NOT EXISTS users(
     id serial PRIMARY KEY,
     username varchar(255) NOT NULL UNIQUE,
-    pwd varchar(255) NOT NULL,
+    password varchar(255) NOT NULL,
     email varchar(255) NOT NULL UNIQUE,
     role int NOT NULL
 );
@@ -52,8 +52,15 @@ CREATE TABLE IF NOT EXISTS payments(
      FOREIGN KEY (invoiceID) REFERENCES invoices (id)
 );
 
+CREATE TABLE IF NOT EXISTS auth(
+    username varchar(255) PRIMARY KEY,
+    refresh_token varchar(10) NOT NULL,
+    expires timestamp NOT NULL
+);
+
 -- DROP TABLE subscriptions CASCADE;
 -- DROP TABLE users CASCADE;
 -- DROP TABLE subscription_users CASCADE;
 -- DROP TABLE invoices CASCADE;
 -- DROP TABLE payments CASCADE;
+-- DROP TABLE auth CASCADE;

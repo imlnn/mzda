@@ -7,13 +7,28 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"log"
+	"mzda/internal/storage/models/mzda"
 	"strings"
 	"time"
+)
+
+const (
+	defaultAlg = "HS512"
+	defaultTyp = "JWT"
 )
 
 type header struct {
 	Alg string `json:"alg"`
 	Typ string `json:"typ"`
+}
+
+func newHeader(alg string, typ string) *header {
+	const fn = "internal/auth/utils/JWT/newHeader"
+	return &header{
+		Alg: alg,
+		Typ: typ,
+	}
 }
 
 type payload struct {
@@ -24,69 +39,85 @@ type payload struct {
 	Admin    bool   `json:"admin"`
 }
 
-type Token struct {
+func newPayload(username string, admin bool) *payload {
+	const fn = "internal/auth/utils/JWT/newPayload"
+	//iss := os.Getenv("SVC")
+	iss := "MZDA_AUTH_SVC"
+	return &payload{Iss: iss,
+		Iat:      time.Now().Unix(),
+		Exp:      time.Now().Add(30 * time.Minute).Unix(),
+		Username: username,
+		Admin:    admin}
+}
+
+type JWT struct {
 	token    string
 	exp      time.Time
 	username string
 	admin    bool
 }
 
-func NewToken(jwt string) (*Token, error) {
-	if !ValidateJWT(jwt) {
-		return nil, fmt.Errorf("jwt signature validation failed")
-	}
-	payload, err := decodeJWTPayload(jwt)
-	if err != nil {
-		return nil, err
-	}
-	token := Token{token: jwt,
-		exp:      time.Unix(payload.Exp, 0),
-		username: payload.Username,
-		admin:    payload.Admin}
+//func NewJWT(jwt string) (*JWT, error) {
+//	if !ValidateJWT(jwt) {
+//		return nil, fmt.Errorf("jwt signature validation failed")
+//	}
+//	payload, err := decodeJWTPayload(jwt)
+//	if err != nil {
+//		return nil, err
+//	}
+//	token := JWT{token: jwt,
+//		exp:      time.Unix(payload.Exp, 0),
+//		username: payload.Username,
+//		admin:    payload.Admin}
+//
+//	if !token.IsExpired() {
+//		return nil, fmt.Errorf("jwt is expired")
+//	}
+//
+//	return &token, nil
+//}
 
-	if !token.IsExpired() {
-		return nil, fmt.Errorf("jwt is expired")
-	}
-
-	return &token, nil
-}
-
-func (t *Token) Username() string {
+func (t *JWT) Username() string {
+	const fn = "internal/auth/utils/JWT/Username"
 	return t.username
 }
 
-func (t *Token) Admin() bool {
+func (t *JWT) Admin() bool {
+	const fn = "internal/auth/utils/JWT/Admin"
 	return t.admin
 }
 
-func (t *Token) IsExpired() bool {
+func (t *JWT) IsExpired() bool {
+	const fn = "internal/auth/utils/JWT/IsExpired"
 	return t.exp.After(time.Now())
 }
 
-func GenerateJWT(username string, issuer string, admin bool) ([]byte, error) {
+func GenerateJWT(username string, role mzda.Role) (string, error) {
+	const fn = "internal/auth/utils/JWT/GenerateJWT"
 	//secret := os.Getenv("jwtSecret")
 	secret := "secret"
 
-	header := header{Alg: "HS512",
-		Typ: "JWT"}
+	var admin = false
+	if role == mzda.ADMIN {
+		admin = true
+	}
 
-	payload := payload{Iss: issuer,
-		Iat:      time.Now().Unix(),
-		Exp:      time.Now().Add(30 * time.Minute).Unix(),
-		Username: username,
-		Admin:    admin}
+	header := newHeader(defaultAlg, defaultTyp)
+	payload := newPayload(username, admin)
 
 	var headerJSON []byte
 	var payloadJSON []byte
 
 	headerJSON, err := json.Marshal(header)
 	if err != nil {
-		return []byte(""), err
+		log.Println(fmt.Errorf("%s %v", fn, err))
+		return "", err
 	}
 
 	payloadJSON, err = json.Marshal(payload)
 	if err != nil {
-		return []byte(""), err
+		log.Println(fmt.Errorf("%s %v", fn, err))
+		return "", err
 	}
 
 	var signature []byte
@@ -106,10 +137,12 @@ func GenerateJWT(username string, issuer string, admin bool) ([]byte, error) {
 	signature = []byte(hex.EncodeToString(enc.Sum(nil)))
 	token = append(token, '.')
 	token = append(token, signature...)
-	return token, nil
+	return string(token), nil
 }
 
 func ValidateJWT(token string) bool {
+	const fn = "internal/auth/utils/JWT/ValidateJWT"
+
 	//secret := os.Getenv("jwtSecret")
 	secret := "secret"
 	data := strings.Split(token, ".")
@@ -121,15 +154,19 @@ func ValidateJWT(token string) bool {
 }
 
 func decodeJWTPayload(token string) (*payload, error) {
+	const fn = "internal/auth/utils/JWT/decodeJWTPayload"
+
 	data := strings.Split(token, ".")
 	p, err := base64.RawStdEncoding.DecodeString(data[1])
 	fmt.Println(string(p))
 	if err != nil {
+		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, err
 	}
 	var payload payload
 	err = json.Unmarshal(p, &payload)
 	if err != nil {
+		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, err
 	}
 	return &payload, nil

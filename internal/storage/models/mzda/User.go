@@ -1,23 +1,23 @@
 package mzda
 
-type role int
+type Role int
 
 const (
-	USER role = iota
+	USER Role = iota
 	ADMIN
 )
 
 type User struct {
 	ID       int
 	Username string `json:"username"`
-	Pwd      string `json:"pwd"`
+	Pwd      string `json:"password"`
 	Email    string `json:"email"`
-	Role     role   `json:"role"`
+	Role     Role   `json:"role"`
 }
 
 type UserDTO struct {
 	Username string `json:"username"`
-	Pwd      string `json:"pwd"`
+	Pwd      string `json:"password"`
 	Email    string `json:"email"`
 }
 
