@@ -3,19 +3,19 @@ package postgres
 import (
 	"fmt"
 	"log"
-	"mzda/internal/storage/models/mzda"
+	"mzda/internal/storage/models"
 	"time"
 )
 
-func (c *Connection) AddAuth(auth *mzda.Auth) error {
-	const fn = "internal/storage/db/postgres/storage/AddUser"
+func (c *Connection) AddAuth(auth *models.Auth) error {
+	const fn = "internal/storage/db/postgres/storage/AddAuth"
 	stmt, err := c.db.Prepare("INSERT INTO auth (username, refresh_token, expires) VALUES ($1, $2, $3)")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return err
 	}
 
-	_, err = stmt.Exec(auth.Username, auth.RefreshToken, auth.Expires, mzda.USER)
+	_, err = stmt.Exec(auth.Username, auth.RefreshToken, auth.Expires)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return err
@@ -24,7 +24,7 @@ func (c *Connection) AddAuth(auth *mzda.Auth) error {
 	return nil
 }
 
-func (c *Connection) GetAuth(token string) (*mzda.Auth, error) {
+func (c *Connection) GetAuth(token string) (*models.Auth, error) {
 	const fn = "internal/storage/db/postgres/storage/UserByName"
 	stmt, err := c.db.Prepare("SELECT * FROM auth WHERE refresh_token = $1")
 	if err != nil {
@@ -32,7 +32,7 @@ func (c *Connection) GetAuth(token string) (*mzda.Auth, error) {
 		return nil, err
 	}
 
-	var auth mzda.Auth
+	var auth models.Auth
 
 	err = stmt.QueryRow(token).Scan(&auth.Username, &auth.RefreshToken, &auth.Expires)
 	if err != nil {
@@ -47,9 +47,32 @@ func (c *Connection) GetAuth(token string) (*mzda.Auth, error) {
 	return &auth, nil
 }
 
+func (c *Connection) GetAuthByUser(username string) (*models.Auth, error) {
+	const fn = "internal/storage/db/postgres/storage/GetAuthByUser"
+	stmt, err := c.db.Prepare("SELECT * FROM auth WHERE username = $1")
+	if err != nil {
+		log.Println(fmt.Errorf("%s %v", fn, err))
+		return nil, err
+	}
+
+	var auth models.Auth
+
+	err = stmt.QueryRow(username).Scan(&auth.Username, &auth.RefreshToken, &auth.Expires)
+	if err != nil {
+		log.Println(fmt.Errorf("%s %v", fn, err))
+		return nil, err
+	}
+
+	if auth.Username == "" {
+		return nil, fmt.Errorf("auth not found")
+	}
+
+	return &auth, nil
+}
+
 func (c *Connection) DeleteAuth(token string) error {
-	const fn = "internal/storage/db/postgres/storage/UserByEmail"
-	stmt, err := c.db.Prepare("DELETE FROM auth WHERE refresh_token < $1")
+	const fn = "internal/storage/db/postgres/storage/DeleteAuth"
+	stmt, err := c.db.Prepare("DELETE FROM auth WHERE refresh_token = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return err
@@ -65,7 +88,7 @@ func (c *Connection) DeleteAuth(token string) error {
 }
 
 func (c *Connection) DeleteExpired() error {
-	const fn = "internal/storage/db/postgres/storage/UserByEmail"
+	const fn = "internal/storage/db/postgres/storage/DeleteExpired"
 	stmt, err := c.db.Prepare("DELETE FROM auth WHERE expires < $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))

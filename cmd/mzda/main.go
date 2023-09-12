@@ -1,10 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"log"
-	"mzda/internal/auth/handlers"
+	authAPI "mzda/internal/api/auth"
+	userAPI "mzda/internal/api/user"
 	"mzda/internal/storage/db/postgres"
+	authSvc "mzda/internal/svc/auth"
+	userSvc "mzda/internal/svc/user"
 	"net/http"
 )
 
@@ -12,13 +16,33 @@ const (
 	envLocal = "local"
 	envDev   = "dev"
 	envProd  = "prod"
-	svc      = "AUTH"
+	svcName  = "AUTH"
 	apiVer   = "1.0"
 )
 
+func NewAuthRouter(authService authSvc.AuthService) chi.Router {
+	router := chi.NewRouter()
+
+	router.Post("/signin", authAPI.SignIn(authService))
+	router.Post("/renew", authAPI.RenewToken(authService))
+
+	return router
+}
+
+func NewUserRouter(userService userSvc.UserService) chi.Router {
+	router := chi.NewRouter()
+
+	router.Post("/signup", authAPI.SignUp(userService))
+	router.Post("/changeUsername", userAPI.ChangeUsername(userService))
+	router.Post("/changePassword", userAPI.ChangePassword(userService))
+	router.Post("/changeEmail", userAPI.ChangeEmail(userService))
+
+	return router
+}
+
 func main() {
 	// Init env
-	//cfg := config.MustLoad(svc)
+	//cfg := config.MustLoad(svcName)
 
 	// Setup logger
 	//log.Printf("Starting mzda")
@@ -30,13 +54,21 @@ func main() {
 	if err != nil {
 		log.Fatal("Couldn't connect to database")
 	}
+	log.Println("DB connection established")
+
+	authService := authSvc.NewAuthSvc(storage, storage)
+	userService := userSvc.NewUserSvc(storage)
 
 	// TODO Init server
 	router := chi.NewRouter()
-	router.Post("/signin", handlers.SignIn(storage, storage))
-	router.Post("/signup", handlers.SignUp(storage))
+	root := fmt.Sprintf("/api/v%s", apiVer)
 
-	err := http.ListenAndServe(":32000", router)
+	authRouter := NewAuthRouter(authService)
+	userRouter := NewUserRouter(userService)
+	router.Mount(root+"/auth", authRouter)
+	router.Mount(root+"/user", userRouter)
+
+	err = http.ListenAndServe(":32000", router)
 	if err != nil {
 		return
 	}

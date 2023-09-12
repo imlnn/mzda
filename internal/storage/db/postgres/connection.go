@@ -21,7 +21,7 @@ func New() (*Connection, error) {
 
 	//connStr := "postgres://postgres:password@localhost/public?sslmode=disable"
 
-	connStr := "user=postgres password=password port=32768 sslmode=disable"
+	connStr := "user=postgres password=postgrespw port=55000 sslmode=disable"
 
 	var err error
 	db.db, err = sql.Open("postgres", connStr)

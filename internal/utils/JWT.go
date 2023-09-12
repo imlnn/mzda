@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"mzda/internal/storage/models/mzda"
+	"mzda/internal/storage/models"
 	"strings"
 	"time"
 )
@@ -92,13 +92,13 @@ func (t *JWT) IsExpired() bool {
 	return t.exp.After(time.Now())
 }
 
-func GenerateJWT(username string, role mzda.Role) (string, error) {
+func GenerateJWT(username string, role models.Role) (string, error) {
 	const fn = "internal/auth/utils/JWT/GenerateJWT"
 	//secret := os.Getenv("jwtSecret")
 	secret := "secret"
 
 	var admin = false
-	if role == mzda.ADMIN {
+	if role == models.ADMIN {
 		admin = true
 	}
 

@@ -1,4 +1,4 @@
-package mzda
+package models
 
 type SubscriptionsStorage interface {
 	AddSubscription()
