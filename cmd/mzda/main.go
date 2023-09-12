@@ -6,6 +6,7 @@ import (
 	"log"
 	authAPI "mzda/internal/api/auth"
 	userAPI "mzda/internal/api/user"
+	"mzda/internal/middleware"
 	"mzda/internal/storage/db/postgres"
 	authSvc "mzda/internal/svc/auth"
 	userSvc "mzda/internal/svc/user"
@@ -32,7 +33,8 @@ func NewAuthRouter(authService authSvc.AuthService) chi.Router {
 func NewUserRouter(userService userSvc.UserService) chi.Router {
 	router := chi.NewRouter()
 
-	router.Post("/signup", authAPI.SignUp(userService))
+	router.Use(middleware.JWTAuth)
+
 	router.Post("/changeUsername", userAPI.ChangeUsername(userService))
 	router.Post("/changePassword", userAPI.ChangePassword(userService))
 	router.Post("/changeEmail", userAPI.ChangeEmail(userService))
@@ -63,9 +65,12 @@ func main() {
 	router := chi.NewRouter()
 	root := fmt.Sprintf("/api/v%s", apiVer)
 
+	router.Post(root+"/signup", authAPI.SignUp(userService))
+
 	authRouter := NewAuthRouter(authService)
-	userRouter := NewUserRouter(userService)
 	router.Mount(root+"/auth", authRouter)
+
+	userRouter := NewUserRouter(userService)
 	router.Mount(root+"/user", userRouter)
 
 	err = http.ListenAndServe(":32000", router)

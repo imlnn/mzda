@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS subscriptions(
 
 CREATE TABLE IF NOT EXISTS users(
     id serial PRIMARY KEY,
-    username varchar(255) NOT NULL UNIQUE,
+    Username varchar(255) NOT NULL UNIQUE,
     password varchar(255) NOT NULL,
     email varchar(255) NOT NULL UNIQUE,
     role int NOT NULL
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS payments(
 );
 
 CREATE TABLE IF NOT EXISTS auth(
-    username varchar(255) PRIMARY KEY,
+    Username varchar(255) PRIMARY KEY,
     refresh_token varchar(10) NOT NULL,
     expires timestamp NOT NULL
 );

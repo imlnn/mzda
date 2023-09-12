@@ -7,6 +7,7 @@ import (
 	"log"
 	"mzda/internal/utils"
 	"net/http"
+	"strings"
 )
 
 type ChangePasswordRequest struct {
@@ -40,6 +41,12 @@ func (svc *UserSvc) ChangePassword(req *http.Request) (err error, statusCode int
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return fmt.Errorf("user not found"), http.StatusNotFound
+	}
+	jwt := req.Context().Value("jwt").(*utils.JWT)
+	if !strings.EqualFold(jwt.Username, usr.Username) {
+		err = fmt.Errorf("token given for another user")
+		log.Println(fmt.Errorf("%s %v", fn, err))
+		return err, http.StatusUnauthorized
 	}
 
 	if !utils.CheckPasswordsEquality(request.OldPassword, usr.Pwd) {
