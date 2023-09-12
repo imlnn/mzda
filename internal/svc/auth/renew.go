@@ -14,7 +14,7 @@ type renewResponse struct {
 }
 
 func (svc *AuthSvc) Renew(req *http.Request) (res []byte, err error, statusCode int) {
-	const fn = "internal/auth/api/auth/SignUp"
+	const fn = "internal/svc/auth/renew/Renew"
 
 	refresh := req.Header.Get("refreshToken")
 	if strings.EqualFold(refresh, "") {

@@ -24,7 +24,7 @@ type header struct {
 }
 
 func newHeader(alg string, typ string) *header {
-	const fn = "internal/auth/utils/JWT/newHeader"
+	const fn = "internal/utils/JWT/newHeader"
 	return &header{
 		Alg: alg,
 		Typ: typ,
@@ -40,7 +40,7 @@ type payload struct {
 }
 
 func newPayload(username string, admin bool) *payload {
-	const fn = "internal/auth/utils/JWT/newPayload"
+	const fn = "internal/utils/JWT/newPayload"
 	//iss := os.Getenv("SVC")
 	iss := "MZDA_AUTH_SVC"
 	return &payload{Iss: iss,
@@ -58,6 +58,7 @@ type JWT struct {
 }
 
 func NewJWT(jwt string) (*JWT, error) {
+	const fn = "internal/utils/JWT/NewJWT"
 	if IsInvalidJWT(jwt) {
 		return nil, fmt.Errorf("jwt signature validation failed")
 	}
@@ -78,12 +79,12 @@ func NewJWT(jwt string) (*JWT, error) {
 }
 
 func (t *JWT) IsExpired() bool {
-	const fn = "internal/auth/utils/JWT/IsExpired"
+	const fn = "internal/utils/JWT/IsExpired"
 	return !t.Exp.After(time.Now())
 }
 
 func GenerateJWT(username string, role models.Role) (string, error) {
-	const fn = "internal/auth/utils/JWT/GenerateJWT"
+	const fn = "internal/utils/JWT/GenerateJWT"
 	//secret := os.Getenv("jwtSecret")
 	secret := "secret"
 
@@ -131,7 +132,7 @@ func GenerateJWT(username string, role models.Role) (string, error) {
 }
 
 func IsInvalidJWT(token string) bool {
-	const fn = "internal/auth/utils/JWT/IsInvalidJWT"
+	const fn = "internal/utils/JWT/IsInvalidJWT"
 	const tokenParts = 3
 
 	//secret := os.Getenv("jwtSecret")
@@ -149,7 +150,7 @@ func IsInvalidJWT(token string) bool {
 }
 
 func decodeJWTPayload(token string) (*payload, error) {
-	const fn = "internal/auth/utils/JWT/decodeJWTPayload"
+	const fn = "internal/utils/JWT/decodeJWTPayload"
 
 	data := strings.Split(token, ".")
 	p, err := base64.RawStdEncoding.DecodeString(data[1])

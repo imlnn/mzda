@@ -7,7 +7,7 @@ import (
 )
 
 func (c *Connection) AddUser(usr *models.UserDTO) error {
-	const fn = "internal/storage/db/postgres/storage/AddUser"
+	const fn = "internal/storage/db/postgres/userStorage/AddUser"
 	stmt, err := c.db.Prepare("INSERT INTO users (username, password, email, role) VALUES ($1, $2, $3, $4)")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
@@ -24,7 +24,7 @@ func (c *Connection) AddUser(usr *models.UserDTO) error {
 }
 
 func (c *Connection) UserByName(username string) (*models.User, error) {
-	const fn = "internal/storage/db/postgres/storage/UserByName"
+	const fn = "internal/storage/db/postgres/userStorage/UserByName"
 	stmt, err := c.db.Prepare("SELECT * FROM users WHERE username = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
@@ -47,7 +47,7 @@ func (c *Connection) UserByName(username string) (*models.User, error) {
 }
 
 func (c *Connection) UserByEmail(email string) (*models.User, error) {
-	const fn = "internal/storage/db/postgres/storage/UserByEmail"
+	const fn = "internal/storage/db/postgres/userStorage/UserByEmail"
 	stmt, err := c.db.Prepare("SELECT * FROM users WHERE email = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
@@ -71,7 +71,7 @@ func (c *Connection) UserByEmail(email string) (*models.User, error) {
 }
 
 func (c *Connection) UserByID(userID int) (*models.User, error) {
-	const fn = "internal/storage/db/postgres/storage/UserByEmail"
+	const fn = "internal/storage/db/postgres/userStorage/UserByID"
 	stmt, err := c.db.Prepare("SELECT * FROM users WHERE id = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
@@ -94,7 +94,7 @@ func (c *Connection) UserByID(userID int) (*models.User, error) {
 }
 
 func (c *Connection) DeleteUser(usr *models.User) error {
-	const fn = "internal/storage/db/postgres/storage/UserByEmail"
+	const fn = "internal/storage/db/postgres/userStorage/DeleteUser"
 	stmt, err := c.db.Prepare("DELETE FROM users WHERE id = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
@@ -111,7 +111,7 @@ func (c *Connection) DeleteUser(usr *models.User) error {
 }
 
 func (c *Connection) UpdateUser(usr *models.User) error {
-	const fn = "internal/storage/db/postgres/storage/AddUser"
+	const fn = "internal/storage/db/postgres/userStorage/UpdateUser"
 	stmt, err := c.db.Prepare("UPDATE users SET username = $1, password = $2, email = $3 WHERE id = $4")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))

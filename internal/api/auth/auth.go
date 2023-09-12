@@ -4,25 +4,12 @@ import (
 	"fmt"
 	"log"
 	"mzda/internal/svc/auth"
-	"mzda/internal/svc/user"
 	"net/http"
 )
 
-func SignUp(svc user.UserService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		const fn = "internal/auth/api/auth/SignUp"
-		err, statusCode := svc.CreateUser(r)
-		if err != nil {
-			http.Error(w, err.Error(), statusCode)
-		}
-		w.WriteHeader(statusCode)
-		return
-	}
-}
-
 func SignIn(svc auth.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const fn = "internal/auth/api/auth/SignIn"
+		const fn = "internal/api/auth/SignIn"
 
 		response, err, statusCode := svc.LoginUser(r)
 		if err != nil {
@@ -45,7 +32,7 @@ func SignIn(svc auth.AuthService) http.HandlerFunc {
 
 func RenewToken(svc auth.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const fn = "internal/auth/api/auth/RenewToken"
+		const fn = "internal/api/auth/RenewToken"
 
 		response, err, statusCode := svc.Renew(r)
 		if err != nil {

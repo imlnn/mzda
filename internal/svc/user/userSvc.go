@@ -10,6 +10,7 @@ type UserSvc struct {
 }
 
 func NewUserSvc(usr models.UserStorage) *UserSvc {
+	const fn = "internal/svc/user/userSvc/NewUserSvc"
 	return &UserSvc{
 		userStorage: usr,
 	}

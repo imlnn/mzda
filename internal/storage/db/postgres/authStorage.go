@@ -8,7 +8,7 @@ import (
 )
 
 func (c *Connection) AddAuth(auth *models.Auth) error {
-	const fn = "internal/storage/db/postgres/storage/AddAuth"
+	const fn = "internal/storage/db/postgres/authStorage/AddAuth"
 	stmt, err := c.db.Prepare("INSERT INTO auth (username, refresh_token, expires) VALUES ($1, $2, $3)")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
@@ -25,7 +25,7 @@ func (c *Connection) AddAuth(auth *models.Auth) error {
 }
 
 func (c *Connection) GetAuth(token string) (*models.Auth, error) {
-	const fn = "internal/storage/db/postgres/storage/UserByName"
+	const fn = "internal/storage/db/postgres/authStorage/GetAuth"
 	stmt, err := c.db.Prepare("SELECT * FROM auth WHERE refresh_token = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
@@ -48,7 +48,7 @@ func (c *Connection) GetAuth(token string) (*models.Auth, error) {
 }
 
 func (c *Connection) GetAuthByUser(username string) (*models.Auth, error) {
-	const fn = "internal/storage/db/postgres/storage/GetAuthByUser"
+	const fn = "internal/storage/db/postgres/authStorage/GetAuthByUser"
 	stmt, err := c.db.Prepare("SELECT * FROM auth WHERE username = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
@@ -71,7 +71,7 @@ func (c *Connection) GetAuthByUser(username string) (*models.Auth, error) {
 }
 
 func (c *Connection) DeleteAuth(token string) error {
-	const fn = "internal/storage/db/postgres/storage/DeleteAuth"
+	const fn = "internal/storage/db/postgres/authStorage/DeleteAuth"
 	stmt, err := c.db.Prepare("DELETE FROM auth WHERE refresh_token = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
@@ -88,7 +88,7 @@ func (c *Connection) DeleteAuth(token string) error {
 }
 
 func (c *Connection) DeleteExpired() error {
-	const fn = "internal/storage/db/postgres/storage/DeleteExpired"
+	const fn = "internal/storage/db/postgres/authStorage/DeleteExpired"
 	stmt, err := c.db.Prepare("DELETE FROM auth WHERE expires < $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))

@@ -9,7 +9,7 @@ import (
 
 func JWTAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		const fn = ""
+		const fn = "internal/middleware/auth/JWTAuth"
 		token := r.Header.Get("Authorization")
 		jwt, err := utils.NewJWT(token)
 		if err != nil {

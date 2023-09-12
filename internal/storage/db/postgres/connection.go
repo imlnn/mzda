@@ -12,7 +12,7 @@ type Connection struct {
 }
 
 func New() (*Connection, error) {
-	const fn = "internal/storage/db/postgres/storage/new"
+	const fn = "internal/storage/db/postgres/connection/New"
 	var db Connection
 
 	//dbUsername := os.Getenv("DB_USERNAME")

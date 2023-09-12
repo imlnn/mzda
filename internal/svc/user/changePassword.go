@@ -17,7 +17,7 @@ type ChangePasswordRequest struct {
 }
 
 func parseChangePassword(b io.ReadCloser) (*ChangePasswordRequest, error) {
-	const fn = "internal/auth/utils/users/ParseChangePassword"
+	const fn = "internal/svc/user/changePassword/parseChangePassword"
 	var req ChangePasswordRequest
 
 	err := json.NewDecoder(b).Decode(&req)
@@ -29,7 +29,7 @@ func parseChangePassword(b io.ReadCloser) (*ChangePasswordRequest, error) {
 }
 
 func (svc *UserSvc) ChangePassword(req *http.Request) (err error, statusCode int) {
-	const fn = "internal/auth/api/auth/SignUp"
+	const fn = "internal/svc/user/changePassword/ChangePassword"
 
 	request, err := parseChangePassword(req.Body)
 	if err != nil {

@@ -20,7 +20,7 @@ type loginResponse struct {
 }
 
 func parseCredentials(b io.ReadCloser) (*loginRequest, error) {
-	const fn = "internal/auth/utils/users/ParseCredentials"
+	const fn = "internal/svc/auth/loginUser/parseCredentials"
 	var req loginRequest
 
 	err := json.NewDecoder(b).Decode(&req)
@@ -32,7 +32,7 @@ func parseCredentials(b io.ReadCloser) (*loginRequest, error) {
 }
 
 func (svc *AuthSvc) LoginUser(req *http.Request) (res []byte, err error, statusCode int) {
-	const fn = "internal/auth/api/auth/SignUp"
+	const fn = "internal/svc/auth/loginUser/LoginUser"
 
 	cred, err := parseCredentials(req.Body)
 	if err != nil {

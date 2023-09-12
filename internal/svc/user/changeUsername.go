@@ -16,7 +16,7 @@ type ChangeUsernameRequest struct {
 }
 
 func parseChangeUsername(b io.ReadCloser) (*ChangeUsernameRequest, error) {
-	const fn = "internal/auth/utils/users/ParseChangePassword"
+	const fn = "internal/svc/user/changeUsername/parseChangeUsername"
 	var req ChangeUsernameRequest
 
 	err := json.NewDecoder(b).Decode(&req)
@@ -28,7 +28,7 @@ func parseChangeUsername(b io.ReadCloser) (*ChangeUsernameRequest, error) {
 }
 
 func (svc *UserSvc) ChangeUsername(req *http.Request) (err error, statusCode int) {
-	const fn = "internal/auth/api/user/ChangeUsername"
+	const fn = "internal/svc/user/changeUsername/ChangeUsername"
 	request, err := parseChangeUsername(req.Body)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))

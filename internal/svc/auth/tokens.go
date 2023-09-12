@@ -8,7 +8,7 @@ import (
 )
 
 func (svc *AuthSvc) generateTokens(usr *models.User) (jwt string, refresh string, err error) {
-	const fn = "internal/auth/api/auth/SignIn"
+	const fn = "internal/svc/auth/tokens/generateTokens"
 	jwt, err = utils.GenerateJWT(usr.Username, usr.Role)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))

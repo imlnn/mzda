@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-chi/chi/v5"
 	"log"
 	authAPI "mzda/internal/api/auth"
 	userAPI "mzda/internal/api/user"
@@ -65,7 +64,7 @@ func main() {
 	router := chi.NewRouter()
 	root := fmt.Sprintf("/api/v%s", apiVer)
 
-	router.Post(root+"/signup", authAPI.SignUp(userService))
+	router.Post(root+"/signup", userAPI.SignUp(userService))
 
 	authRouter := NewAuthRouter(authService)
 	router.Mount(root+"/auth", authRouter)

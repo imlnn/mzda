@@ -18,6 +18,7 @@ type AuthSvc struct {
 }
 
 func NewAuthSvc(auth models.AuthsStorage, usr models.UserStorage) *AuthSvc {
+	const fn = "internal/svc/auth/authSvc/NewAuthSvc"
 	return &AuthSvc{
 		authStorage: auth,
 		userStorage: usr,
@@ -25,6 +26,7 @@ func NewAuthSvc(auth models.AuthsStorage, usr models.UserStorage) *AuthSvc {
 }
 
 func newAuth(username string) *models.Auth {
+	const fn = "internal/svc/auth/authSvc/newAuth"
 	refreshToken := utils.GenerateRefresh()
 	expires := time.Now().Add(24 * 32 * time.Hour)
 	return &models.Auth{

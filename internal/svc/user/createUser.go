@@ -10,7 +10,7 @@ import (
 )
 
 func parseUserDTO(b io.ReadCloser) (*models.UserDTO, error) {
-	const fn = "internal/auth/utils/users/ParseUser"
+	const fn = "internal/svc/user/createUser/parseUserDTO"
 	var usr models.UserDTO
 
 	err := json.NewDecoder(b).Decode(&usr)
@@ -22,7 +22,7 @@ func parseUserDTO(b io.ReadCloser) (*models.UserDTO, error) {
 }
 
 func (svc *UserSvc) CreateUser(req *http.Request) (err error, statusCode int) {
-	const fn = "internal/auth/api/auth/SignUp"
+	const fn = "internal/svc/user/createUser/CreateUser"
 	usr, err := parseUserDTO(req.Body)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))

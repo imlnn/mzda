@@ -16,7 +16,7 @@ type ChangeEmailRequest struct {
 }
 
 func parseChangeEmail(b io.ReadCloser) (*ChangeEmailRequest, error) {
-	const fn = "internal/auth/utils/users/ParseChangePassword"
+	const fn = "internal/svc/user/changeEmail/parseChangeEmail"
 	var req ChangeEmailRequest
 
 	err := json.NewDecoder(b).Decode(&req)
@@ -28,7 +28,7 @@ func parseChangeEmail(b io.ReadCloser) (*ChangeEmailRequest, error) {
 }
 
 func (svc *UserSvc) ChangeEmail(req *http.Request) (err error, statusCode int) {
-	const fn = "internal/auth/api/user/ChangeEmail"
+	const fn = "internal/svc/user/changeEmail/ChangeEmail"
 	request, err := parseChangeEmail(req.Body)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
