@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
-	utils2 "mzda/internal/utils"
+	"mzda/internal/utils"
 	"net/http"
 )
 
@@ -42,12 +42,12 @@ func (svc *UserSvc) ChangePassword(req *http.Request) (err error, statusCode int
 		return fmt.Errorf("user not found"), http.StatusNotFound
 	}
 
-	if !utils2.CheckPasswordsEquality(request.OldPassword, usr.Pwd) {
+	if !utils.CheckPasswordsEquality(request.OldPassword, usr.Pwd) {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return fmt.Errorf("passwords don't match"), http.StatusBadRequest
 	}
 
-	if !utils2.CheckPasswordSecurity(request.NewPassword) {
+	if !utils.CheckPasswordSecurity(request.NewPassword) {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return fmt.Errorf("new password don't satifies min length == 8"), http.StatusBadRequest
 	}
