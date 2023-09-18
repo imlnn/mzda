@@ -93,23 +93,6 @@ func (c *Connection) UserByID(userID int) (*models.User, error) {
 	return &usr, nil
 }
 
-func (c *Connection) DeleteUser(usr *models.User) error {
-	const fn = "internal/storage/db/postgres/userStorage/DeleteUser"
-	stmt, err := c.db.Prepare("DELETE FROM users WHERE id = $1")
-	if err != nil {
-		log.Println(fmt.Errorf("%s %v", fn, err))
-		return err
-	}
-
-	_, err = stmt.Exec(usr.ID)
-	if err != nil {
-		log.Println(fmt.Errorf("%s %v", fn, err))
-		return err
-	}
-
-	return nil
-}
-
 func (c *Connection) UpdateUser(usr *models.User) error {
 	const fn = "internal/storage/db/postgres/userStorage/UpdateUser"
 	stmt, err := c.db.Prepare("UPDATE users SET username = $1, password = $2, email = $3 WHERE id = $4")
@@ -119,6 +102,23 @@ func (c *Connection) UpdateUser(usr *models.User) error {
 	}
 
 	_, err = stmt.Exec(usr.Username, usr.Pwd, usr.Email, usr.ID)
+	if err != nil {
+		log.Println(fmt.Errorf("%s %v", fn, err))
+		return err
+	}
+
+	return nil
+}
+
+func (c *Connection) DeleteUser(usr *models.User) error {
+	const fn = "internal/storage/db/postgres/userStorage/DeleteUser"
+	stmt, err := c.db.Prepare("DELETE FROM users WHERE id = $1")
+	if err != nil {
+		log.Println(fmt.Errorf("%s %v", fn, err))
+		return err
+	}
+
+	_, err = stmt.Exec(usr.ID)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return err

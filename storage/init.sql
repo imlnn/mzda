@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS subscriptions(
     id serial PRIMARY KEY,
-    subscription_name varchar(255) NOT NULL UNIQUE,
-    subscription_admin int NOT NULL,
+    name varchar(255) NOT NULL UNIQUE,
+    description varchar(255) NOT NULL,
+    admin_id int NOT NULL,
     max_members int NOT NULL CHECK(max_members > 0),
     price int NOT NULL CHECK(price > -1),
     currency varchar(3) NOT NULL,
