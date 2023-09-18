@@ -25,6 +25,7 @@ type header struct {
 
 func newHeader(alg string, typ string) *header {
 	const fn = "internal/utils/JWT/newHeader"
+
 	return &header{
 		Alg: alg,
 		Typ: typ,
@@ -59,9 +60,11 @@ type JWT struct {
 
 func NewJWT(jwt string) (*JWT, error) {
 	const fn = "internal/utils/JWT/NewJWT"
+
 	if IsInvalidJWT(jwt) {
 		return nil, fmt.Errorf("jwt signature validation failed")
 	}
+
 	payload, err := decodeJWTPayload(jwt)
 	if err != nil {
 		return nil, err
@@ -112,8 +115,11 @@ func GenerateJWT(username string, role models.Role) (string, error) {
 	}
 
 	var signature []byte
+
 	var token []byte
+
 	var h []byte
+
 	var p []byte
 
 	h = []byte(base64.RawStdEncoding.EncodeToString(headerJSON))
