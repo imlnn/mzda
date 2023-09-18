@@ -7,11 +7,14 @@ import (
 	"net/http"
 )
 
+// SignIn
+//
+//	POST /auth/signin
 func SignIn(svc auth.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/auth/SignIn"
 
-		response, err, statusCode := svc.LoginUser(r)
+		response, statusCode, err := svc.LoginUser(r)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))
 			http.Error(w, err.Error(), statusCode)
@@ -30,11 +33,14 @@ func SignIn(svc auth.AuthService) http.HandlerFunc {
 	}
 }
 
+// RenewToken
+//
+//	POST /auth/renew
 func RenewToken(svc auth.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/auth/RenewToken"
 
-		response, err, statusCode := svc.Renew(r)
+		response, statusCode, err := svc.Renew(r)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))
 			http.Error(w, err.Error(), statusCode)

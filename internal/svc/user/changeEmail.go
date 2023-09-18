@@ -27,32 +27,32 @@ func parseChangeEmail(b io.ReadCloser) (*ChangeEmailRequest, error) {
 	return &req, nil
 }
 
-func (svc *UserSvc) ChangeEmail(req *http.Request) (err error, statusCode int) {
+func (svc *UserSvc) ChangeEmail(req *http.Request) (statusCode int, err error) {
 	const fn = "internal/svc/user/changeEmail/ChangeEmail"
 	request, err := parseChangeEmail(req.Body)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
-		return fmt.Errorf("failed to parse request"), http.StatusBadRequest
+		return http.StatusBadRequest, fmt.Errorf("failed to parse request")
 	}
 
 	usr, err := svc.userStorage.UserByName(request.Username)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
-		return fmt.Errorf("user not found"), http.StatusNotFound
+		return http.StatusNotFound, fmt.Errorf("user not found")
 	}
 	jwt := req.Context().Value("jwt").(*utils.JWT)
 	if !strings.EqualFold(jwt.Username, usr.Username) {
 		err = fmt.Errorf("token given for another user")
 		log.Println(fmt.Errorf("%s %v", fn, err))
-		return err, http.StatusUnauthorized
+		return http.StatusUnauthorized, err
 	}
 
 	usr.Email = request.NewEmail
 	err = svc.userStorage.UpdateUser(usr)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
-		return fmt.Errorf("failed to update"), http.StatusInternalServerError
+		return http.StatusInternalServerError, fmt.Errorf("failed to update")
 	}
 
-	return nil, http.StatusOK
+	return http.StatusOK, nil
 }

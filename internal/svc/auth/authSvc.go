@@ -8,8 +8,8 @@ import (
 )
 
 type AuthService interface {
-	LoginUser(req *http.Request) (res []byte, err error, statusCode int)
-	Renew(req *http.Request) (res []byte, err error, statusCode int)
+	LoginUser(req *http.Request) (res []byte, statusCode int, err error)
+	Renew(req *http.Request) (res []byte, statusCode int, err error)
 }
 
 type AuthSvc struct {

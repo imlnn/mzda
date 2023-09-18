@@ -17,8 +17,8 @@ func NewUserSvc(usr models.UserStorage) *UserSvc {
 }
 
 type UserService interface {
-	CreateUser(req *http.Request) (err error, statusCode int)
-	ChangeUsername(req *http.Request) (err error, statusCode int)
-	ChangePassword(req *http.Request) (err error, statusCode int)
-	ChangeEmail(req *http.Request) (err error, statusCode int)
+	CreateUser(req *http.Request) (statusCode int, err error)
+	ChangeUsername(req *http.Request) (statusCode int, err error)
+	ChangePassword(req *http.Request) (statusCode int, err error)
+	ChangeEmail(req *http.Request) (statusCode int, err error)
 }

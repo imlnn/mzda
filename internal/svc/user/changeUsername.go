@@ -27,32 +27,32 @@ func parseChangeUsername(b io.ReadCloser) (*ChangeUsernameRequest, error) {
 	return &req, nil
 }
 
-func (svc *UserSvc) ChangeUsername(req *http.Request) (err error, statusCode int) {
+func (svc *UserSvc) ChangeUsername(req *http.Request) (statusCode int, err error) {
 	const fn = "internal/svc/user/changeUsername/ChangeUsername"
 	request, err := parseChangeUsername(req.Body)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
-		return fmt.Errorf("failed to parse request"), http.StatusBadRequest
+		return http.StatusBadRequest, fmt.Errorf("failed to parse request")
 	}
 
 	usr, err := svc.userStorage.UserByName(request.Username)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
-		return fmt.Errorf("user not found"), http.StatusNotFound
+		return http.StatusNotFound, fmt.Errorf("user not found")
 	}
 	jwt := req.Context().Value("jwt").(*utils.JWT)
 	if !strings.EqualFold(jwt.Username, usr.Username) {
 		err = fmt.Errorf("token given for another user")
 		log.Println(fmt.Errorf("%s %v", fn, err))
-		return err, http.StatusUnauthorized
+		return http.StatusUnauthorized, err
 	}
 
 	usr.Username = request.NewUsername
 	err = svc.userStorage.UpdateUser(usr)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
-		return fmt.Errorf("failed to update"), http.StatusInternalServerError
+		return http.StatusInternalServerError, fmt.Errorf("failed to update")
 	}
 
-	return nil, http.StatusOK
+	return http.StatusOK, nil
 }

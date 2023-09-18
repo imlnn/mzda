@@ -21,17 +21,17 @@ func parseUserDTO(b io.ReadCloser) (*models.UserDTO, error) {
 	return &usr, nil
 }
 
-func (svc *UserSvc) CreateUser(req *http.Request) (err error, statusCode int) {
+func (svc *UserSvc) CreateUser(req *http.Request) (statusCode int, err error) {
 	const fn = "internal/svc/user/createUser/CreateUser"
 	usr, err := parseUserDTO(req.Body)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
-		return fmt.Errorf("failed to parse request"), http.StatusBadRequest
+		return http.StatusBadRequest, fmt.Errorf("failed to parse request")
 	}
 	err = svc.userStorage.AddUser(usr)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
-		return fmt.Errorf("failed to register"), http.StatusInternalServerError
+		return http.StatusInternalServerError, fmt.Errorf("failed to register")
 	}
-	return nil, http.StatusOK
+	return http.StatusOK, nil
 }

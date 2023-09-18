@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS auth(
     expires timestamp NOT NULL
 );
 
--- DROP TABLE subscriptions CASCADE;
+-- DROP TABLE subscription CASCADE;
 -- DROP TABLE users CASCADE;
 -- DROP TABLE subscription_users CASCADE;
 -- DROP TABLE invoices CASCADE;

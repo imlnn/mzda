@@ -8,7 +8,7 @@ import (
 
 func (c *Connection) AddSubscription(sub *models.Subscription) error {
 	const fn = "internal/storage/db/postgres/subscriptionStorage/AddSubscription"
-	stmt, err := c.db.Prepare("INSERT INTO subscriptions (name, admin_id, description, max_members, price, currency, commission, charge_period, creation, start, ending) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)")
+	stmt, err := c.db.Prepare("INSERT INTO subscription (name, admin_id, description, max_members, price, currency, commission, charge_period, creation, start, ending) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return err
@@ -28,7 +28,7 @@ func (c *Connection) AddSubscription(sub *models.Subscription) error {
 
 func (c *Connection) SubscriptionByID(subID int) (*models.Subscription, error) {
 	const fn = "internal/storage/db/postgres/subscriptionStorage/SubscriptionByID"
-	stmt, err := c.db.Prepare("SELECT * FROM subscriptions WHERE id = $1")
+	stmt, err := c.db.Prepare("SELECT * FROM subscription WHERE id = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, err
@@ -49,7 +49,7 @@ func (c *Connection) SubscriptionByID(subID int) (*models.Subscription, error) {
 
 func (c *Connection) SubscriptionByAdminID(subAdminID int) (*models.Subscription, error) {
 	const fn = "internal/storage/db/postgres/subscriptionStorage/SubscriptionByAdminID"
-	stmt, err := c.db.Prepare("SELECT * FROM subscriptions WHERE admin_id = $1")
+	stmt, err := c.db.Prepare("SELECT * FROM subscription WHERE admin_id = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, err
@@ -74,7 +74,7 @@ func (c *Connection) SubscriptionByAdminID(subAdminID int) (*models.Subscription
 
 func (c *Connection) SubscriptionByName(name string) (*models.Subscription, error) {
 	const fn = "internal/storage/db/postgres/subscriptionStorage/SubscriptionByAdminID"
-	stmt, err := c.db.Prepare("SELECT * FROM subscriptions WHERE name = $1")
+	stmt, err := c.db.Prepare("SELECT * FROM subscription WHERE name = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, err
@@ -95,7 +95,7 @@ func (c *Connection) SubscriptionByName(name string) (*models.Subscription, erro
 
 func (c *Connection) UpdateSubscription(sub *models.Subscription) error {
 	const fn = "internal/storage/db/postgres/subscriptionStorage/UpdateSubscription"
-	stmt, err := c.db.Prepare("UPDATE subscriptions SET name = $1, description = $2, admin_id = $3, max_members = $4, price = $5, currency = $6, commission = $7, charge_period = $8, creation = $9, start = $10, ending = $11 WHERE id = $12")
+	stmt, err := c.db.Prepare("UPDATE subscription SET name = $1, description = $2, admin_id = $3, max_members = $4, price = $5, currency = $6, commission = $7, charge_period = $8, creation = $9, start = $10, ending = $11 WHERE id = $12")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return err
@@ -113,7 +113,7 @@ func (c *Connection) UpdateSubscription(sub *models.Subscription) error {
 
 func (c *Connection) DeleteSubscription(sub *models.Subscription) error {
 	const fn = "internal/storage/db/postgres/subscriptionStorage/DeleteSubscription"
-	stmt, err := c.db.Prepare("DELETE FROM subscriptions WHERE id = $1")
+	stmt, err := c.db.Prepare("DELETE FROM subscription WHERE id = $1")
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return err

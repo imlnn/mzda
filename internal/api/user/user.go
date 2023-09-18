@@ -7,10 +7,13 @@ import (
 	"net/http"
 )
 
+// SignUp
+//
+//	POST /signup
 func SignUp(svc user.UserService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/user/SignUp"
-		err, statusCode := svc.CreateUser(r)
+		statusCode, err := svc.CreateUser(r)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))
 			http.Error(w, err.Error(), statusCode)
@@ -21,10 +24,13 @@ func SignUp(svc user.UserService) http.HandlerFunc {
 	}
 }
 
+// ChangeUsername
+//
+//	POST /user/changeUsername
 func ChangeUsername(svc user.UserService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/user/ChangeUsername"
-		err, statusCode := svc.ChangeUsername(r)
+		statusCode, err := svc.ChangeUsername(r)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))
 			http.Error(w, err.Error(), statusCode)
@@ -35,10 +41,13 @@ func ChangeUsername(svc user.UserService) http.HandlerFunc {
 	}
 }
 
+// ChangePassword
+//
+//	POST /user/changePassword
 func ChangePassword(svc user.UserService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/user/ChangePassword"
-		err, statusCode := svc.ChangePassword(r)
+		statusCode, err := svc.ChangePassword(r)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))
 			http.Error(w, err.Error(), statusCode)
@@ -49,10 +58,13 @@ func ChangePassword(svc user.UserService) http.HandlerFunc {
 	}
 }
 
+// ChangeEmail
+//
+//	POST /user/changeEmail
 func ChangeEmail(svc user.UserService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/user/ChangePassword"
-		err, statusCode := svc.ChangeEmail(r)
+		statusCode, err := svc.ChangeEmail(r)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))
 			http.Error(w, err.Error(), statusCode)
