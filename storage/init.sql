@@ -21,11 +21,10 @@ CREATE TABLE IF NOT EXISTS users(
     role int NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS subscription_users(
+CREATE TABLE IF NOT EXISTS subscribers(
      id serial PRIMARY KEY,
      userID int NOT NULL,
      subscriptionID int NOT NULL,
-     balance int NOT NULL,
      subscription_start timestamp NOT NULL,
      subscription_ending timestamp,
 
@@ -61,7 +60,7 @@ CREATE TABLE IF NOT EXISTS auth(
 
 DROP TABLE subscriptions CASCADE;
 DROP TABLE users CASCADE;
-DROP TABLE subscription_users CASCADE;
+DROP TABLE subscribers CASCADE;
 DROP TABLE invoices CASCADE;
 DROP TABLE payments CASCADE;
 DROP TABLE auth CASCADE;
