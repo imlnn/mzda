@@ -35,12 +35,13 @@ func newHeader(alg string, typ string) *header {
 type payload struct {
 	Iss      string `json:"iss"`
 	Iat      int64  `json:"iat"`
-	Exp      int64  `json:"Exp"`
-	Username string `json:"Username"`
-	Admin    bool   `json:"Admin"`
+	Exp      int64  `json:"exp"`
+	Username string `json:"username"`
+	UserID   int    `json:"userID"`
+	Admin    bool   `json:"admin"`
 }
 
-func newPayload(username string, admin bool) *payload {
+func newPayload(username string, userID int, admin bool) *payload {
 	const fn = "internal/utils/JWT/newPayload"
 	//iss := os.Getenv("SVC")
 	iss := "MZDA_AUTH_SVC"
@@ -48,6 +49,7 @@ func newPayload(username string, admin bool) *payload {
 		Iat:      time.Now().Unix(),
 		Exp:      time.Now().Add(30 * time.Minute).Unix(),
 		Username: username,
+		UserID:   userID,
 		Admin:    admin}
 }
 
@@ -55,6 +57,7 @@ type JWT struct {
 	Token    string
 	Exp      time.Time
 	Username string
+	UserID   int
 	Admin    bool
 }
 
@@ -86,7 +89,7 @@ func (t *JWT) IsExpired() bool {
 	return !t.Exp.After(time.Now())
 }
 
-func GenerateJWT(username string, role models.Role) (string, error) {
+func GenerateJWT(username string, userID int, role models.Role) (string, error) {
 	const fn = "internal/utils/JWT/GenerateJWT"
 	//secret := os.Getenv("jwtSecret")
 	secret := "secret"
@@ -97,7 +100,7 @@ func GenerateJWT(username string, role models.Role) (string, error) {
 	}
 
 	header := newHeader(defaultAlg, defaultTyp)
-	payload := newPayload(username, admin)
+	payload := newPayload(username, userID, admin)
 
 	var headerJSON []byte
 	var payloadJSON []byte

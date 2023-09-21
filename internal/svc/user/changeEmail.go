@@ -27,7 +27,7 @@ func parseChangeEmail(b io.ReadCloser) (*ChangeEmailRequest, error) {
 	return &req, nil
 }
 
-func (svc *UserSvc) ChangeEmail(req *http.Request) (statusCode int, err error) {
+func (svc *Svc) ChangeEmail(req *http.Request) (statusCode int, err error) {
 	const fn = "internal/svc/user/changeEmail/ChangeEmail"
 	request, err := parseChangeEmail(req.Body)
 	if err != nil {

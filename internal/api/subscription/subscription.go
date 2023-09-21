@@ -2,15 +2,17 @@ package subscription
 
 import (
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"log"
 	"mzda/internal/svc/subscription"
 	"net/http"
+	"strconv"
 )
 
 // NewSubscription
 //
 //	POST /subscription
-func NewSubscription(svc subscription.SubscriptionService) http.HandlerFunc {
+func NewSubscription(svc subscription.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/subscription/NewSubscription"
 		statusCode, err := svc.AddSubscription(r)
@@ -27,10 +29,25 @@ func NewSubscription(svc subscription.SubscriptionService) http.HandlerFunc {
 // GetSubscription
 //
 //	GET /subscription/{id}
-func GetSubscription(svc subscription.SubscriptionService) http.HandlerFunc {
+func GetSubscription(svc subscription.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/subscription/GetSubscription"
-		response, statusCode, err := svc.SubscriptionByID(r)
+
+		param := chi.URLParam(r, "id")
+		if param == "" {
+			err := fmt.Errorf("%s %v", fn, "id is empty")
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		id, err := strconv.Atoi(param)
+		if err != nil {
+			err := fmt.Errorf("%s %v", fn, "id is not a number")
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		response, statusCode, err := svc.SubscriptionByID(id)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))
 			http.Error(w, err.Error(), statusCode)
@@ -52,7 +69,7 @@ func GetSubscription(svc subscription.SubscriptionService) http.HandlerFunc {
 // UpdateSubscription
 //
 //	PUT /subscription/{id}
-func UpdateSubscription(svc subscription.SubscriptionService) http.HandlerFunc {
+func UpdateSubscription(svc subscription.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/subscription/UpdateSubscription"
 		statusCode, err := svc.UpdateSubscription(r)
@@ -69,10 +86,25 @@ func UpdateSubscription(svc subscription.SubscriptionService) http.HandlerFunc {
 // DeleteSubscription
 //
 //	DELETE /subscription/{id}
-func DeleteSubscription(svc subscription.SubscriptionService) http.HandlerFunc {
+func DeleteSubscription(svc subscription.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/subscription/DeleteSubscription"
-		statusCode, err := svc.DeleteSubscription(r)
+
+		param := chi.URLParam(r, "id")
+		if param == "" {
+			err := fmt.Errorf("%s %v", fn, "id is empty")
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		id, err := strconv.Atoi(param)
+		if err != nil {
+			err := fmt.Errorf("%s %v", fn, "id is not a number")
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		statusCode, err := svc.DeleteSubscription(id, r)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))
 			http.Error(w, err.Error(), statusCode)

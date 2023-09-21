@@ -31,7 +31,7 @@ func parseCredentials(b io.ReadCloser) (*loginRequest, error) {
 	return &req, nil
 }
 
-func (svc *AuthSvc) LoginUser(req *http.Request) (res []byte, statusCode int, err error) {
+func (svc *Svc) LoginUser(req *http.Request) (res []byte, statusCode int, err error) {
 	const fn = "internal/svc/auth/loginUser/LoginUser"
 
 	cred, err := parseCredentials(req.Body)

@@ -21,7 +21,7 @@ func parseUserDTO(b io.ReadCloser) (*models.UserDTO, error) {
 	return &usr, nil
 }
 
-func (svc *UserSvc) CreateUser(req *http.Request) (statusCode int, err error) {
+func (svc *Svc) CreateUser(req *http.Request) (statusCode int, err error) {
 	const fn = "internal/svc/user/createUser/CreateUser"
 	usr, err := parseUserDTO(req.Body)
 	if err != nil {

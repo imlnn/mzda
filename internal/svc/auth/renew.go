@@ -13,7 +13,7 @@ type renewResponse struct {
 	Refresh string `json:"refresh"`
 }
 
-func (svc *AuthSvc) Renew(req *http.Request) (res []byte, statusCode int, err error) {
+func (svc *Svc) Renew(req *http.Request) (res []byte, statusCode int, err error) {
 	const fn = "internal/svc/auth/renew/Renew"
 
 	refresh := req.Header.Get("refreshToken")

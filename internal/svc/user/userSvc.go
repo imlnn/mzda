@@ -5,18 +5,18 @@ import (
 	"net/http"
 )
 
-type UserSvc struct {
+type Svc struct {
 	userStorage models.UserStorage
 }
 
-func NewUserSvc(usr models.UserStorage) *UserSvc {
+func NewUserSvc(usr models.UserStorage) *Svc {
 	const fn = "internal/svc/user/userSvc/NewUserSvc"
-	return &UserSvc{
+	return &Svc{
 		userStorage: usr,
 	}
 }
 
-type UserService interface {
+type Service interface {
 	CreateUser(req *http.Request) (statusCode int, err error)
 	ChangeUsername(req *http.Request) (statusCode int, err error)
 	ChangePassword(req *http.Request) (statusCode int, err error)

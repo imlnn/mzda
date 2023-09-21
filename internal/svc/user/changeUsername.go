@@ -27,7 +27,7 @@ func parseChangeUsername(b io.ReadCloser) (*ChangeUsernameRequest, error) {
 	return &req, nil
 }
 
-func (svc *UserSvc) ChangeUsername(req *http.Request) (statusCode int, err error) {
+func (svc *Svc) ChangeUsername(req *http.Request) (statusCode int, err error) {
 	const fn = "internal/svc/user/changeUsername/ChangeUsername"
 	request, err := parseChangeUsername(req.Body)
 	if err != nil {

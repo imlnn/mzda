@@ -7,9 +7,9 @@ import (
 	"mzda/internal/utils"
 )
 
-func (svc *AuthSvc) generateTokens(usr *models.User) (jwt string, refresh string, err error) {
+func (svc *Svc) generateTokens(usr *models.User) (jwt string, refresh string, err error) {
 	const fn = "internal/svc/auth/tokens/generateTokens"
-	jwt, err = utils.GenerateJWT(usr.Username, usr.Role)
+	jwt, err = utils.GenerateJWT(usr.Username, usr.ID, usr.Role)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		err = fmt.Errorf("failed to generate jwt")

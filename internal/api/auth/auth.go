@@ -10,7 +10,7 @@ import (
 // SignIn
 //
 //	POST /auth/signin
-func SignIn(svc auth.AuthService) http.HandlerFunc {
+func SignIn(svc auth.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/auth/SignIn"
 
@@ -36,7 +36,7 @@ func SignIn(svc auth.AuthService) http.HandlerFunc {
 // RenewToken
 //
 //	POST /auth/renew
-func RenewToken(svc auth.AuthService) http.HandlerFunc {
+func RenewToken(svc auth.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/auth/RenewToken"
 

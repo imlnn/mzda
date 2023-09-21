@@ -28,7 +28,7 @@ func parseChangePassword(b io.ReadCloser) (*ChangePasswordRequest, error) {
 	return &req, nil
 }
 
-func (svc *UserSvc) ChangePassword(req *http.Request) (statusCode int, err error) {
+func (svc *Svc) ChangePassword(req *http.Request) (statusCode int, err error) {
 	const fn = "internal/svc/user/changePassword/ChangePassword"
 
 	request, err := parseChangePassword(req.Body)

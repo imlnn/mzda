@@ -7,19 +7,19 @@ import (
 	"time"
 )
 
-type AuthService interface {
-	LoginUser(req *http.Request) (res []byte, statusCode int, err error)
-	Renew(req *http.Request) (res []byte, statusCode int, err error)
-}
-
-type AuthSvc struct {
+type Svc struct {
 	authStorage models.AuthsStorage
 	userStorage models.UserStorage
 }
 
-func NewAuthSvc(auth models.AuthsStorage, usr models.UserStorage) *AuthSvc {
+type Service interface {
+	LoginUser(req *http.Request) (Service []byte, statusCode int, err error)
+	Renew(req *http.Request) (res []byte, statusCode int, err error)
+}
+
+func NewAuthSvc(auth models.AuthsStorage, usr models.UserStorage) *Svc {
 	const fn = "internal/svc/auth/authSvc/NewAuthSvc"
-	return &AuthSvc{
+	return &Svc{
 		authStorage: auth,
 		userStorage: usr,
 	}

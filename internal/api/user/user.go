@@ -10,7 +10,7 @@ import (
 // SignUp
 //
 //	POST /signup
-func SignUp(svc user.UserService) http.HandlerFunc {
+func SignUp(svc user.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/user/SignUp"
 		statusCode, err := svc.CreateUser(r)
@@ -27,7 +27,7 @@ func SignUp(svc user.UserService) http.HandlerFunc {
 // ChangeUsername
 //
 //	POST /user/changeUsername
-func ChangeUsername(svc user.UserService) http.HandlerFunc {
+func ChangeUsername(svc user.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/user/ChangeUsername"
 		statusCode, err := svc.ChangeUsername(r)
@@ -44,7 +44,7 @@ func ChangeUsername(svc user.UserService) http.HandlerFunc {
 // ChangePassword
 //
 //	POST /user/changePassword
-func ChangePassword(svc user.UserService) http.HandlerFunc {
+func ChangePassword(svc user.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/user/ChangePassword"
 		statusCode, err := svc.ChangePassword(r)
@@ -61,7 +61,7 @@ func ChangePassword(svc user.UserService) http.HandlerFunc {
 // ChangeEmail
 //
 //	POST /user/changeEmail
-func ChangeEmail(svc user.UserService) http.HandlerFunc {
+func ChangeEmail(svc user.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/user/ChangePassword"
 		statusCode, err := svc.ChangeEmail(r)
