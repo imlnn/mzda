@@ -60,7 +60,7 @@ func GetSubscriber(svc subscriber.Service) http.HandlerFunc {
 	}
 }
 
-func GetSubscribersByUserID(svc subscriber.Service) http.HandlerFunc {
+func GetSubscribersListByUserID(svc subscriber.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "internal/api/subscriber/GetSubscribers"
 
