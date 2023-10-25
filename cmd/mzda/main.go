@@ -6,11 +6,13 @@ import (
 	chiMiddlewares "github.com/go-chi/chi/v5/middleware"
 	"log"
 	authAPI "mzda/internal/api/auth"
+	subscriberAPI "mzda/internal/api/subscriber"
 	subscriptionAPI "mzda/internal/api/subscription"
 	userAPI "mzda/internal/api/user"
 	"mzda/internal/middleware"
 	"mzda/internal/storage/db/postgres"
 	authSvc "mzda/internal/svc/auth"
+	subsSvc "mzda/internal/svc/subscriber"
 	subSvc "mzda/internal/svc/subscription"
 	userSvc "mzda/internal/svc/user"
 	"net/http"
@@ -58,6 +60,21 @@ func NewSubscriptionRouter(subscriptionService subSvc.Service) chi.Router {
 	return router
 }
 
+func NewSubscriberRouter(subscriberService subsSvc.Service) chi.Router {
+	router := chi.NewRouter()
+
+	router.Use(chiMiddlewares.URLFormat)
+	router.Use(middleware.JWTAuth)
+
+	router.Post("/", subscriberAPI.NewSubscriber(subscriberService))
+	router.Get("/{id}", subscriberAPI.GetSubscriber(subscriberService))
+	router.Get("/list/{id}", subscriberAPI.GetSubscribersListByUserID(subscriberService))
+	router.Put("/", subscriberAPI.UpdateSubscriber(subscriberService))
+	router.Delete("/{id}", subscriberAPI.DeleteSubscriber(subscriberService))
+
+	return router
+}
+
 func main() {
 	// Init env
 	//cfg := config.MustLoad(svcName)
@@ -77,6 +94,7 @@ func main() {
 	authService := authSvc.NewAuthSvc(storage, storage)
 	userService := userSvc.NewUserSvc(storage)
 	subService := subSvc.NewSubscriptionSvc(storage)
+	subsService := subsSvc.NewSubscriberSvc(storage)
 
 	// TODO Init server
 	router := chi.NewRouter()
@@ -92,6 +110,9 @@ func main() {
 
 	subscriptionRouter := NewSubscriptionRouter(subService)
 	router.Mount(root+"/subscription", subscriptionRouter)
+
+	subscriberRouter := NewSubscriberRouter(subsService)
+	router.Mount(root+"/subscriber", subscriberRouter)
 
 	err = http.ListenAndServe(":32000", router)
 	if err != nil {
