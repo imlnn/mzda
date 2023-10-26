@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	"log"
+	"os"
 )
 
 type Connection struct {
@@ -15,13 +16,12 @@ func New() (*Connection, error) {
 	const fn = "internal/storage/db/postgres/connection/New"
 	var db Connection
 
-	//dbUsername := os.Getenv("DB_USERNAME")
-	//dbPwd := os.Getenv("DB_PWD")
-	//connStr := fmt.Sprintf("postgres://%s:%s@localhost/mzda", dbUsername, dbPwd)
-
-	//connStr := "postgres://postgres:password@localhost/public?sslmode=disable"
-
-	connStr := "user=postgres password=postgrespw port=55000 sslmode=disable"
+	dbUser := os.Getenv("POSTGRES_USER")
+	dbPwd := os.Getenv("POSTGRES_PASSWORD")
+	dbName := os.Getenv("POSTGRES_DB")
+	dbHost := os.Getenv("POSTGRES_HOST")
+	dbPort := os.Getenv("POSTGRES_PORT")
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbPort, dbUser, dbPwd, dbName)
 
 	var err error
 	db.db, err = sql.Open("postgres", connStr)

@@ -5,15 +5,10 @@ RUN go version
 
 WORKDIR /app
 COPY . .
-#RUN "go mod download && go build -o /mzda cmd/mzda/main.go && chmod +x /mzda"
-#RUN "go mod tidy && go mod vendor"
-#RUN "go build -o /mzda cmd/mzda/main.go"
-#RUN "chmod +x /mzda"
+RUN go mod download && go build -o /mzda cmd/mzda/main.go && chmod +x /mzda
 
-CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
+FROM alpine:3
 
-#FROM alpine:3
+COPY --from=build /mzda /mzda
 
-#COPY --from=build /mzda /mzda
-
-#CMD ["./mzda"]
+CMD ["./mzda"]
