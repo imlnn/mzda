@@ -54,7 +54,7 @@ func (svc *Svc) ChangePassword(req *http.Request) (statusCode int, err error) {
 		return http.StatusBadRequest, fmt.Errorf("passwords don't match")
 	}
 
-	if !utils.CheckPasswordSecurity(request.NewPassword) {
+	if err := utils.CheckPasswordSecurity(request.NewPassword); err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return http.StatusBadRequest, fmt.Errorf("new password don't satifies min length == 8")
 	}

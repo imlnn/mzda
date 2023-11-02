@@ -1,3 +1,6 @@
+// TODO Для лучшего структурирования вынести все что связано с JWT в отдельный пакет
+// TODO Вынести ошибки в отдельную структуру
+
 package utils
 
 import (
@@ -32,6 +35,8 @@ func newHeader(alg string, typ string) *header {
 	}
 }
 
+// TODO Для повышения читаемости вынести в отдельный файл 21-33
+
 type payload struct {
 	Iss      string `json:"iss"`
 	Iat      int64  `json:"iat"`
@@ -52,6 +57,8 @@ func newPayload(username string, userID int, admin bool) *payload {
 		UserID:   userID,
 		Admin:    admin}
 }
+
+// TODO Для повышения читаемости вынести в отдельный файл 37-56
 
 type JWT struct {
 	Token    string
@@ -90,6 +97,9 @@ func (t *JWT) IsExpired() bool {
 	return t.Exp.Before(time.Now())
 }
 
+// TODO Для повышения читаемости вынести в отдельный файл 60-95
+
+// TODO Для повышение читаемости разделить на методы GenerateJWT, EncodeHeader, EncodePayload, EncodeSignature
 func GenerateJWT(username string, userID int, role models.Role) (string, error) {
 	const fn = "internal/utils/JWT/GenerateJWT"
 	//secret := os.Getenv("jwtSecret")
@@ -138,6 +148,7 @@ func GenerateJWT(username string, userID int, role models.Role) (string, error) 
 	return string(token), nil
 }
 
+// TODO Для улучшения читаемости изменить название на IsInvalidToken
 func IsInvalidJWT(token string) bool {
 	const fn = "internal/utils/JWT/IsInvalidJWT"
 	const tokenParts = 3
@@ -156,6 +167,7 @@ func IsInvalidJWT(token string) bool {
 	return !strings.EqualFold(data[2], signature)
 }
 
+// TODO Для повышения читаемости изменить название на decodeTokenPayload
 func decodeJWTPayload(token string) (*payload, error) {
 	const fn = "internal/utils/JWT/decodeJWTPayload"
 

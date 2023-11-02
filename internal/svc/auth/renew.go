@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 )
 
 type renewResponse struct {
@@ -17,7 +16,7 @@ func (svc *Svc) Renew(req *http.Request) (res []byte, statusCode int, err error)
 	const fn = "internal/svc/auth/renew/Renew"
 
 	refresh := req.Header.Get("refreshToken")
-	if strings.EqualFold(refresh, "") {
+	if refresh == "" {
 		err := fmt.Errorf("missing refresh token")
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, http.StatusBadRequest, err
@@ -28,7 +27,7 @@ func (svc *Svc) Renew(req *http.Request) (res []byte, statusCode int, err error)
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, http.StatusNotFound, fmt.Errorf("failed to find session")
 	}
-
+	// TODO Удалить лишнюю переменную использовавшуюся для отладки
 	temp := auth.IsExpired()
 	temp = temp
 	if auth.IsExpired() {

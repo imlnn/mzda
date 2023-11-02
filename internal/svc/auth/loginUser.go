@@ -27,7 +27,7 @@ func parseCredentials(b io.ReadCloser) (*loginRequest, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s  %v", fn, err)
 	}
-
+	// TODO Заменить == на strings.EqualsFold, поскольку данная функция является более производительной
 	if req.Username == "" || req.Password == "" {
 		return nil, fmt.Errorf("%s  provided JSON is empty", fn)
 	}

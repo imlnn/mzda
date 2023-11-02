@@ -16,6 +16,10 @@ import (
 	subSvc "mzda/internal/svc/subscription"
 	userSvc "mzda/internal/svc/user"
 	"net/http"
+	_ "net/http/pprof"
+	"os"
+	"os/signal"
+	"runtime/pprof"
 )
 
 const (
@@ -114,8 +118,27 @@ func main() {
 	subscriberRouter := NewSubscriberRouter(subsService)
 	router.Mount(root+"/subscriber", subscriberRouter)
 
-	err = http.ListenAndServe(":32000", router)
-	if err != nil {
-		return
-	}
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
+	cpuProfile, _ := os.Create("cpuprofile")
+	memProfile, _ := os.Create("memprofile")
+	_ = pprof.StartCPUProfile(cpuProfile)
+	go func() {
+		err = http.ListenAndServe(":32000", router)
+		if err != nil {
+			return
+		}
+	}()
+
+	// Setting up signal capturing
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt)
+
+	// Waiting for SIGINT (kill -2)
+	<-stop
+
+	pprof.StopCPUProfile()
+	_ = pprof.WriteHeapProfile(memProfile)
 }
