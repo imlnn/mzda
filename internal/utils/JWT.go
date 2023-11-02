@@ -75,6 +75,7 @@ func NewJWT(jwt string) (*JWT, error) {
 	token := JWT{Token: jwt,
 		Exp:      time.Unix(payload.Exp, 0),
 		Username: payload.Username,
+		UserID:   payload.UserID,
 		Admin:    payload.Admin}
 
 	if token.IsExpired() {
@@ -86,7 +87,7 @@ func NewJWT(jwt string) (*JWT, error) {
 
 func (t *JWT) IsExpired() bool {
 	const fn = "internal/utils/JWT/IsExpired"
-	return !t.Exp.After(time.Now())
+	return t.Exp.Before(time.Now())
 }
 
 func GenerateJWT(username string, userID int, role models.Role) (string, error) {
@@ -118,11 +119,8 @@ func GenerateJWT(username string, userID int, role models.Role) (string, error) 
 	}
 
 	var signature []byte
-
 	var token []byte
-
 	var h []byte
-
 	var p []byte
 
 	h = []byte(base64.RawStdEncoding.EncodeToString(headerJSON))
@@ -163,7 +161,6 @@ func decodeJWTPayload(token string) (*payload, error) {
 
 	data := strings.Split(token, ".")
 	p, err := base64.RawStdEncoding.DecodeString(data[1])
-	fmt.Println(string(p))
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, err

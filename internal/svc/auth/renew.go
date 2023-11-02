@@ -29,6 +29,8 @@ func (svc *Svc) Renew(req *http.Request) (res []byte, statusCode int, err error)
 		return nil, http.StatusNotFound, fmt.Errorf("failed to find session")
 	}
 
+	temp := auth.IsExpired()
+	temp = temp
 	if auth.IsExpired() {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, http.StatusUnauthorized, fmt.Errorf("token is expired")

@@ -28,6 +28,10 @@ func parseCredentials(b io.ReadCloser) (*loginRequest, error) {
 		return nil, fmt.Errorf("%s  %v", fn, err)
 	}
 
+	if req.Username == "" || req.Password == "" {
+		return nil, fmt.Errorf("%s  provided JSON is empty", fn)
+	}
+
 	return &req, nil
 }
 
