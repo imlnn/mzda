@@ -4,12 +4,12 @@ services:
     container_name: mzda-app
     image: mzda:latest
     ports:
-      - "8080:8080"
+      - "8080:8080"  # Expose port 8080 on the host to port 8080 in the container
     depends_on:
       - postgres
     environment:
-      POSTGRES_HOST: postgres  # Use the service name as the host
-      POSTGRES_PORT: 5432      # Use the default PostgreSQL port
+      POSTGRES_HOST: postgres  # Use the service name as the database host
+      POSTGRES_PORT: 5432      # Use the default port for PostgreSQL
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -25,8 +25,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "55000:5432"  # Map host port 55000 to container port 5432
     networks:
       - bridge-net
 
