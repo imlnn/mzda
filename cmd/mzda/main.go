@@ -95,6 +95,16 @@ func main() {
 	}
 	log.Println("DB connection established")
 
+	err = storage.CleanDB()
+	if err != nil {
+		fmt.Printf("%w", err)
+	}
+
+	err = storage.InitDB()
+	if err != nil {
+		log.Fatalf("%w", err)
+	}
+
 	authService := authSvc.NewAuthSvc(storage, storage)
 	userService := userSvc.NewUserSvc(storage)
 	subService := subSvc.NewSubscriptionSvc(storage)
