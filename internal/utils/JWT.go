@@ -48,6 +48,7 @@ func newPayload(username string, userID int, admin bool) *payload {
 	const iss = "MZDA_AUTH_SVC"
 
 	var tokenTTL, err = strconv.Atoi(os.Getenv("tokenTTL"))
+	tokenTTL = 10
 	if err != nil {
 		log.Printf("%v Couldn't get token TTL for enviroment", fn)
 		return nil
