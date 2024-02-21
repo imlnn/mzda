@@ -55,7 +55,7 @@ func (svc *Svc) LoginUser(req *http.Request) (res []byte, statusCode int, err er
 		return nil, http.StatusUnauthorized, fmt.Errorf("passwords not match")
 	}
 
-	auth, err := svc.authStorage.GetAuthByUser(usr.Username)
+	auth, _ := svc.authStorage.GetAuthByUser(usr.Username)
 	if auth != nil {
 		err = svc.authStorage.DeleteAuth(auth.RefreshToken)
 		if err != nil {

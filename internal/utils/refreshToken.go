@@ -4,11 +4,12 @@ import (
 	"math/rand"
 )
 
-var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-
 func GenerateRefresh() string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	const refreshLen = 10
+
 	const fn = "internal/utils/refreshToken/GenerateRefresh"
-	b := make([]rune, 10)
+	b := make([]rune, refreshLen)
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
 	}

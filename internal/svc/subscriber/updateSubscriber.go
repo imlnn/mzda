@@ -18,10 +18,13 @@ func (svc *Svc) UpdateSubscriber(req *http.Request) (statusCode int, err error) 
 	oldSubscriber, err := svc.subscriberStorage.SubscriberByID(sub.ID)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
-		return http.StatusBadRequest, err
+		return http.StatusNotFound, err
 	}
 
 	subscription, err := svc.subscriptionStorage.SubscriptionByID(oldSubscriber.SubscriptionID)
+	if err != nil {
+		return http.StatusBadRequest, err
+	}
 
 	jwt := req.Context().Value("jwt").(*utils.JWT)
 	if jwt.UserID != subscription.AdminID || !jwt.Admin {

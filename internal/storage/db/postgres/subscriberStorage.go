@@ -57,22 +57,17 @@ func (c *Connection) SubscriptionsByUserID(usrID int) ([]*models.Subscriber, err
 		return nil, err
 	}
 
-	res := make([]*models.Subscriber, 5)
+	res := make([]*models.Subscriber, 0)
 
 	for rows.Next() {
 		sub := new(models.Subscriber)
-		err := rows.Scan(
+		err = rows.Scan(
 			&sub.ID, &sub.UserID, &sub.SubscriptionID, &sub.SubscriptionStart, &sub.SubscriptionEnd)
 		if err != nil {
 			log.Println(fmt.Errorf("%s %v", fn, err))
 			return nil, err
 		}
 		res = append(res, sub)
-	}
-
-	if err != nil {
-		log.Println(fmt.Errorf("%s %v", fn, err))
-		return nil, err
 	}
 
 	return res, nil

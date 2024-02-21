@@ -36,8 +36,8 @@ func GetSubscriber(svc subscriber.Service) http.HandlerFunc {
 
 		id, err := strconv.Atoi(param)
 		if err != nil {
-			err := fmt.Errorf("%s %v", fn, "id is not a number")
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			e := fmt.Errorf("%s %v", fn, "id is not a number")
+			http.Error(w, e.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -73,8 +73,8 @@ func GetSubscribersListByUserID(svc subscriber.Service) http.HandlerFunc {
 
 		id, err := strconv.Atoi(param)
 		if err != nil {
-			err := fmt.Errorf("%s %v", fn, "id is not a number")
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			e := fmt.Errorf("%s %v", fn, "id is not a number")
+			http.Error(w, e.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -124,8 +124,8 @@ func DeleteSubscriber(svc subscriber.Service) http.HandlerFunc {
 
 		id, err := strconv.Atoi(param)
 		if err != nil {
-			err := fmt.Errorf("%s %v", fn, "id is not a number")
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			e := fmt.Errorf("%s %v", fn, "id is not a number")
+			http.Error(w, e.Error(), http.StatusBadRequest)
 			return
 		}
 

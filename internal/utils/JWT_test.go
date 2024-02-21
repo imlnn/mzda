@@ -11,30 +11,37 @@ import (
 )
 
 func TestGenerateJWT(t *testing.T) {
+	// Creating sample payload data
 	username := "testuser"
 	userID := 1
 	role := models.USER
 
+	// Generating JWT token
 	token, err := GenerateJWT(username, userID, role)
 	assert.NoError(t, err)
 
+	// Parsing token to JWT struct
 	jwt, err := NewJWT(token)
 	assert.NoError(t, err)
 
+	// Check equality of test data and test data after encoding
 	assert.Equal(t, username, jwt.Username)
 	assert.Equal(t, userID, jwt.UserID)
 	assert.False(t, jwt.Admin)
 }
 
 func TestIsInvalidJWT(t *testing.T) {
+	// Creating sample payload data
 	username := "testuser"
 	userID := 1
 	role := models.USER
 
+	// Creating not JWT string, valid JWT, and JWT with invalid signature
 	invalidToken := "invalid.token"
 	validToken, _ := GenerateJWT(username, userID, role)
 	invalidSignatureToken := validToken[:len(validToken)-5]
 
+	// Checking IsInvalidJWT
 	assert.True(t, IsInvalidJWT(invalidToken))
 	assert.True(t, IsInvalidJWT(invalidSignatureToken))
 	assert.False(t, IsInvalidJWT(validToken))
@@ -55,11 +62,11 @@ func TestDecodePayload(t *testing.T) {
 	jwtParts := strings.Split(expiredToken, ".")
 	decodedPayload, _ := base64.RawStdEncoding.DecodeString(jwtParts[1])
 
-	var payload payload
+	var pl payload
 
-	err = json.Unmarshal(decodedPayload, &payload)
-	payload.Exp = time.Now().Unix() - 3600
-	newPayloadJSON, _ := json.Marshal(payload)
+	_ = json.Unmarshal(decodedPayload, &pl)
+	pl.Exp = time.Now().Unix() - 3600
+	newPayloadJSON, _ := json.Marshal(pl)
 	newPayload := base64.RawStdEncoding.EncodeToString(newPayloadJSON)
 	expiredToken = jwtParts[0] + "." + newPayload + "." + jwtParts[2]
 

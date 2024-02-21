@@ -17,9 +17,6 @@ import (
 	userSvc "mzda/internal/svc/user"
 	"net/http"
 	_ "net/http/pprof"
-	"os"
-	"os/signal"
-	"runtime/pprof"
 )
 
 const (
@@ -80,12 +77,9 @@ func NewSubscriberRouter(subscriberService subsSvc.Service) chi.Router {
 }
 
 func main() {
-	// Init env
-	//cfg := config.MustLoad(svcName)
-
-	// Setup logger
-	//log.Printf("Starting mzda")
-	//log.Printf("Environment %v", cfg.Env)
+	go func() {
+		log.Println(http.ListenAndServe(":6060", nil))
+	}()
 
 	// TODO Setup DB
 	log.Printf("Trying connect DB")
@@ -104,6 +98,12 @@ func main() {
 	router := chi.NewRouter()
 	root := fmt.Sprintf("/api/v%s", apiVer)
 
+	stopServer := func(srv *http.Server) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			_ = srv.Shutdown(r.Context())
+		}
+	}
+
 	router.Post(root+"/signup", userAPI.SignUp(userService))
 
 	authRouter := NewAuthRouter(authService)
@@ -118,27 +118,10 @@ func main() {
 	subscriberRouter := NewSubscriberRouter(subsService)
 	router.Mount(root+"/subscriber", subscriberRouter)
 
-	go func() {
-		log.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
-
-	cpuProfile, _ := os.Create("cpuprofile")
-	memProfile, _ := os.Create("memprofile")
-	_ = pprof.StartCPUProfile(cpuProfile)
-	go func() {
-		err = http.ListenAndServe(":32000", router)
-		if err != nil {
-			return
-		}
-	}()
-
-	// Setting up signal capturing
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt)
-
-	// Waiting for SIGINT (kill -2)
-	<-stop
-
-	pprof.StopCPUProfile()
-	_ = pprof.WriteHeapProfile(memProfile)
+	server := &http.Server{Addr: ":32000", Handler: router}
+	router.Get(root+"/stop", stopServer(server))
+	err = server.ListenAndServe()
+	if err != nil {
+		return
+	}
 }

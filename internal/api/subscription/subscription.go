@@ -42,7 +42,7 @@ func GetSubscription(svc subscription.Service) http.HandlerFunc {
 
 		id, err := strconv.Atoi(param)
 		if err != nil {
-			err := fmt.Errorf("%s %v", fn, "id is not a number")
+			err = fmt.Errorf("%s %v", fn, "id is not a number")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -99,7 +99,7 @@ func DeleteSubscription(svc subscription.Service) http.HandlerFunc {
 
 		id, err := strconv.Atoi(param)
 		if err != nil {
-			err := fmt.Errorf("%s %v", fn, "id is not a number")
+			err = fmt.Errorf("%s %v", fn, "id is not a number")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}

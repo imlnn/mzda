@@ -14,8 +14,12 @@ type Connection struct {
 
 func NewMockConnection() *Connection {
 	conn := &Connection{}
-	conn.failAuth = make(map[string]bool, 5)
-	conn.failUsers = make(map[string]bool, 6)
+
+	authMethods := 5
+	usersMethods := 6
+
+	conn.failAuth = make(map[string]bool, authMethods)
+	conn.failUsers = make(map[string]bool, usersMethods)
 	return conn
 }
 

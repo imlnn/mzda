@@ -1,6 +1,3 @@
-// TODO Для лучшего структурирования вынести все что связано с JWT в отдельный пакет
-// TODO Вынести ошибки в отдельную структуру
-
 package utils
 
 import (
@@ -12,6 +9,8 @@ import (
 	"fmt"
 	"log"
 	"mzda/internal/storage/models"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -35,8 +34,6 @@ func newHeader(alg string, typ string) *header {
 	}
 }
 
-// TODO Для повышения читаемости вынести в отдельный файл 21-33
-
 type payload struct {
 	Iss      string `json:"iss"`
 	Iat      int64  `json:"iat"`
@@ -48,17 +45,21 @@ type payload struct {
 
 func newPayload(username string, userID int, admin bool) *payload {
 	const fn = "internal/utils/JWT/newPayload"
-	//iss := os.Getenv("SVC")
-	iss := "MZDA_AUTH_SVC"
+	const iss = "MZDA_AUTH_SVC"
+
+	var tokenTTL, err = strconv.Atoi(os.Getenv("tokenTTL"))
+	if err != nil {
+		log.Printf("%v Couldn't get token TTL for enviroment", fn)
+		return nil
+	}
+
 	return &payload{Iss: iss,
 		Iat:      time.Now().Unix(),
-		Exp:      time.Now().Add(30 * time.Minute).Unix(),
+		Exp:      time.Now().Add(time.Duration(tokenTTL) * time.Minute).Unix(),
 		Username: username,
 		UserID:   userID,
 		Admin:    admin}
 }
-
-// TODO Для повышения читаемости вынести в отдельный файл 37-56
 
 type JWT struct {
 	Token    string
@@ -97,13 +98,9 @@ func (t *JWT) IsExpired() bool {
 	return t.Exp.Before(time.Now())
 }
 
-// TODO Для повышения читаемости вынести в отдельный файл 60-95
-
-// TODO Для повышение читаемости разделить на методы GenerateJWT, EncodeHeader, EncodePayload, EncodeSignature
 func GenerateJWT(username string, userID int, role models.Role) (string, error) {
 	const fn = "internal/utils/JWT/GenerateJWT"
-	//secret := os.Getenv("jwtSecret")
-	secret := "secret"
+	secret := os.Getenv("jwtSecret")
 
 	var admin = false
 	if role == models.ADMIN {
@@ -145,16 +142,15 @@ func GenerateJWT(username string, userID int, role models.Role) (string, error) 
 	signature = []byte(hex.EncodeToString(enc.Sum(nil)))
 	token = append(token, '.')
 	token = append(token, signature...)
+
 	return string(token), nil
 }
 
-// TODO Для улучшения читаемости изменить название на IsInvalidToken
 func IsInvalidJWT(token string) bool {
 	const fn = "internal/utils/JWT/IsInvalidJWT"
 	const tokenParts = 3
 
-	//secret := os.Getenv("jwtSecret")
-	secret := "secret"
+	secret := os.Getenv("jwtSecret")
 	data := strings.Split(token, ".")
 	if len(data) != tokenParts {
 		return true
@@ -167,7 +163,6 @@ func IsInvalidJWT(token string) bool {
 	return !strings.EqualFold(data[2], signature)
 }
 
-// TODO Для повышения читаемости изменить название на decodeTokenPayload
 func decodeJWTPayload(token string) (*payload, error) {
 	const fn = "internal/utils/JWT/decodeJWTPayload"
 
@@ -177,11 +172,11 @@ func decodeJWTPayload(token string) (*payload, error) {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, err
 	}
-	var payload payload
-	err = json.Unmarshal(p, &payload)
+	var pl payload
+	err = json.Unmarshal(p, &pl)
 	if err != nil {
 		log.Println(fmt.Errorf("%s %v", fn, err))
 		return nil, err
 	}
-	return &payload, nil
+	return &pl, nil
 }

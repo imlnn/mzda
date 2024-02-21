@@ -15,6 +15,7 @@ import (
 
 const HOST = "http://127.0.0.1:32000/api/v1.0"
 
+// Flushing DB after tests
 func flushDB() {
 	connection, err := postgres.New()
 	if err != nil {
@@ -119,17 +120,18 @@ func BuildChangeUsernameRequest(dto *models.UserDTO, tokens *LoginResponse) *htt
 	}
 	reqPayload, _ := json.Marshal(usernameReq)
 
-	req, _ := http.NewRequest("POST", HOST+"/user/changePassword", bytes.NewReader(reqPayload))
+	req, _ := http.NewRequest("POST", HOST+"/user/changeUsername", bytes.NewReader(reqPayload))
 	req.Header.Add("Authorization", tokens.JWT)
 	return req
 }
 
 func main() {
 	flushDB()
-	totalRequests := 100
-	rps := 10
+	totalRequests := 1000
+	rps := 100
 
 	for {
+		// Channels for transmitting errors from gorutines
 		createUserErrorsChan := make(chan error, totalRequests)
 		loginErrorsChan := make(chan error, totalRequests)
 		renewErrorsChan := make(chan error, totalRequests)
@@ -137,6 +139,7 @@ func main() {
 		changePasswordErrorsChan := make(chan error, totalRequests)
 		changeUsernameErrorsChan := make(chan error, totalRequests)
 
+		// Stores errors count
 		createUserErrors := 0
 		loginErrors := 0
 		renewErrors := 0
@@ -155,6 +158,8 @@ func main() {
 						return
 					}
 				}()
+
+				// Registration
 				dto := BuildUserDTO(i)
 				regReq := BuildCreateUserRequest(dto)
 				client := http.Client{
@@ -171,6 +176,12 @@ func main() {
 					return
 				}
 
+				err = res.Body.Close()
+				if err != nil {
+					return
+				}
+
+				// Login
 				loginReq := BuildLoginRequest(dto)
 				res, err = client.Do(loginReq)
 				if err != nil {
@@ -184,6 +195,12 @@ func main() {
 				}
 				tokens := DecodeLoginResponse(res)
 
+				err = res.Body.Close()
+				if err != nil {
+					return
+				}
+
+				//Token renewal
 				renewReq := BuildRenewRequest(tokens.Refresh)
 				res, err = client.Do(renewReq)
 				if err != nil {
@@ -197,6 +214,12 @@ func main() {
 				}
 				tokens = DecodeLoginResponse(res)
 
+				err = res.Body.Close()
+				if err != nil {
+					return
+				}
+
+				// Changing of email
 				emailReq := BuildChangeEmailRequest(dto, tokens)
 				res, err = client.Do(emailReq)
 				if err != nil {
@@ -210,6 +233,12 @@ func main() {
 				}
 				dto.Email = "changed" + dto.Email
 
+				err = res.Body.Close()
+				if err != nil {
+					return
+				}
+
+				// Changing of password
 				pwdReq := BuildChangePasswordRequest(dto, tokens)
 				res, err = client.Do(pwdReq)
 				if err != nil {
@@ -223,7 +252,13 @@ func main() {
 				}
 				dto.Pwd = "changed" + dto.Pwd
 
-				usernameReq := BuildChangePasswordRequest(dto, tokens)
+				err = res.Body.Close()
+				if err != nil {
+					return
+				}
+
+				// Changing of username
+				usernameReq := BuildChangeUsernameRequest(dto, tokens)
 				res, err = client.Do(usernameReq)
 				if err != nil {
 					log.Printf("ChangeUsername: %v, Response code: %v, Failed with err: %v", i, res.StatusCode, err)
@@ -235,6 +270,12 @@ func main() {
 					return
 				}
 				dto.Username = "changed" + dto.Username
+
+				err = res.Body.Close()
+				if err != nil {
+					return
+				}
+
 				wg.Done()
 				return
 			}()
@@ -242,6 +283,7 @@ func main() {
 		}
 
 		wg.Wait()
+		// Count errors by endpoints
 		for i := 0; i < totalRequests; i++ {
 			select {
 			case <-createUserErrorsChan:
@@ -288,22 +330,25 @@ func main() {
 		close(changeUsernameErrorsChan)
 
 		totalErrors := createUserErrors + loginErrors + renewErrors + changeEmailErrors + changePasswordErrors + changeUsernameErrors
-		successRate := float32((totalRequests - totalErrors) / totalRequests)
+		successRate := (float32(totalRequests) - float32(totalErrors)) / float32(totalRequests)
 
+		// Getting stats
 		fmt.Printf("\nLoad test report\nTotal requests: %v\nRPS: %v\nErrors: %v\nSuccessRate: %v",
 			totalRequests, rps, totalErrors, successRate)
 		fmt.Printf("\n\nErrors by endpoint\nCreateUser: %v\nSignIn: %v\nRenew: %v\nChangeEmail: %v\nChangePassword: %v\nChangeUsername:%v\n",
 			createUserErrors, loginErrors, renewErrors, changeEmailErrors, changePasswordErrors, changeUsernameErrors)
 
-		time.Sleep(3 * time.Second)
+		time.Sleep(5 * time.Second)
 
-		if successRate < 0.9 {
-			flushDB()
-			break
-		} else {
-			totalRequests = totalRequests * 2
+		// If more than 90% of the requests were successful test continues with additional 10 RPS
+		// Else test stopping
+		if successRate > 0.9 {
+			totalRequests = totalRequests + 100
 			rps = totalRequests / 10
 			flushDB()
+		} else {
+			flushDB()
+			break
 		}
 	}
 }

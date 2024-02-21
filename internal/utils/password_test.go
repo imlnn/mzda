@@ -16,6 +16,10 @@ func TestCheckPasswordsEquality(t *testing.T) {
 }
 
 func TestCheckPasswordSecurity(t *testing.T) {
+	// Checking function for checking password requirements
+	//
+	// Requirements: Min 8 symbols, min 1 UpperCase char, min 1 LowerCase char, min 1 Digit
+
 	pwd := "Sh0rt"
 	err := CheckPasswordSecurity(pwd)
 	assert.Error(t, err)
